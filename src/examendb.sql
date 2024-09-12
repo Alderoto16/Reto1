@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS ConvocatoriaExamen (
 CREATE TABLE IF NOT EXISTS Enunciado (
     id INTEGER PRIMARY KEY,
     descripcion TEXT NOT NULL,
-     nivel ENUM('ALTA', 'MEDIA', 'BAJA'),
+	nivel ENUM('ALTA', 'MEDIA', 'BAJA'),
     disponible BOOLEAN DEFAULT TRUE,
     ruta VARCHAR(255),
     convocatoria_examen VARCHAR(50),
