@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS examendb;
+CREATE DATABASE IF NOT EXISTS examendb;
 USE examendb;
 
 CREATE TABLE IF NOT EXISTS UnidadDidactica (
