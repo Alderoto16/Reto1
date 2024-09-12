@@ -1,21 +1,19 @@
+package Models;
+
+import Models.Dificultad;
+
 public class Enunciado {
     private int id;
     private String descripcion;
-    private Nivel nivel;
+    private Dificultad nivel;
     private boolean disponible;
     private String ruta;
     private String convocatoriaExamen;
 
-    // Enumeración para el campo nivel
-    public enum Nivel {
-        ALTA, MEDIA, BAJA
-    }
-
-    // Constructor
-    public Enunciado(int id, String descripcion, Nivel nivel, boolean disponible, String ruta, String convocatoriaExamen) {
+    public Enunciado(int id, String descripcion, Dificultad dificultad, boolean disponible, String ruta, String convocatoriaExamen) {
         this.id = id;
         this.descripcion = descripcion;
-        this.nivel = nivel;
+        this.nivel = dificultad;
         this.disponible = disponible;
         this.ruta = ruta;
         this.convocatoriaExamen = convocatoriaExamen;
@@ -37,11 +35,11 @@ public class Enunciado {
         this.descripcion = descripcion;
     }
 
-    public Nivel getNivel() {
+    public Dificultad getNivel() {
         return nivel;
     }
 
-    public void setNivel(Nivel nivel) {
+    public void setNivel(Dificultad nivel) {
         this.nivel = nivel;
     }
 
