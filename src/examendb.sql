@@ -1,19 +1,17 @@
 create database examendb;
 use examendb;
 
-CREATE TYPE Dificultad AS ENUM ('ALTA', 'MEDIA', 'BAJA');
-
 CREATE TABLE UnidadDidactica (
     id SERIAL PRIMARY KEY,
-    acronimo VARCHAR(50) NOT NULL,
-    titulo VARCHAR(100) NOT NULL,
+    acronimo VARCHAR(50),
+    titulo VARCHAR(100),
     evaluacion VARCHAR(50),
-    descripcion TEXT
+    descripcion VARCHAR(100)
 );
 
 CREATE TABLE ConvocatoriaExamen (
     convocatoria VARCHAR(50) PRIMARY KEY,
-    descripcion TEXT,
+    descripcion VARCHAR(100),
     fecha DATE NOT NULL,
     curso VARCHAR(100)
 );
@@ -21,7 +19,7 @@ CREATE TABLE ConvocatoriaExamen (
 CREATE TABLE Enunciado (
     id SERIAL PRIMARY KEY,
     descripcion TEXT NOT NULL,
-    nivel Dificultad NOT NULL,
+     nivel ENUM('ALTA', 'MEDIA', 'BAJA'),
     disponible BOOLEAN DEFAULT TRUE,
     ruta VARCHAR(255),
     convocatoria_examen VARCHAR(50),
