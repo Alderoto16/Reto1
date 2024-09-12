@@ -1,4 +1,6 @@
-public class Reto1 {
+package Controller;
+
+public class main {
 
     /**
      * @param args the command line arguments
