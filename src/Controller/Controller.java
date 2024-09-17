@@ -10,7 +10,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import Models.UnidadDidactica;
-import Utilidades.MySqlConnection;
 
 public class Controller implements IController {
     
@@ -20,15 +19,16 @@ public class Controller implements IController {
         
         //Querys
         final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
-
-	
+        final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, decripcion, fecha, curso) VALUES (?, ?, ?, ?)";
+	final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
+        
         
             @Override
         public boolean crearUnidad(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
 		boolean added = false;
 		try {
 
-			statement = connection.prepareStatement(INSERTunidadDidactica);
+			//statement = connection.prepareStatement(INSERTunidadDidactica);
 			statement.setInt(1, id);
 			statement.setString(2, acronimo);
 			statement.setString(3, titulo);
