@@ -14,7 +14,7 @@ public class MySqlConnection {
     /**
      * The JDBC URL for connecting to the MySQL database.
      */
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/laliga?serverTimezone=Europe/Madrid&allowPublicKeyRetrieval=true&useSSL=false";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid&allowPublicKeyRetrieval=true&useSSL=false";
 
     /**
      * The singleton instance of the MySqlConnection class.
