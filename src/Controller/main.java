@@ -2,20 +2,25 @@ package Controller;
 
 import Utilidades.Util;
 
+
 public class main {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        Controller controller = new Controller ();
         // TODO code application logic here
         int menu;
+        boolean added;
         do {
             showMenu();
             menu = Util.leerInt("¿Que desea hacer?", 0, 7);
             switch (menu) {
 
                 case 1:
+                  added = controller.crearUnidad();
+                  System.out.println(added);
                     break;
                 case 2:
                     break;
