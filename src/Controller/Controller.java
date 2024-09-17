@@ -54,11 +54,10 @@ public class Controller implements IController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public static void connectionDB() {
+    public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
         String password = "abcd*1234";
-
         try {
             // Cargar el controlador JDBC
             Class.forName("com.mysql.cj.jdbc.Driver");
