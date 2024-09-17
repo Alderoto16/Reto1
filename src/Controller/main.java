@@ -19,13 +19,14 @@ public class main {
             switch (menu) {
 
                 case 1:
-                  added = controller.crearUnidad();
-                  System.out.println(added);
+                    added = controller.crearUnidad();
+                    System.out.println(added);
                     break;
                 case 2:
                     added = controller.crearConvocatoria();
                     break;
                 case 3:
+                    added = controller.crearEnunciado();
                     break;
                 case 4:
                     break;

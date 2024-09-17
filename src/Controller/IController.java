@@ -8,7 +8,7 @@ public interface IController {
     
      public boolean crearUnidad();
      public boolean crearConvocatoria();
-     public boolean crearEnunciado(int id, String descripcion, String nivel, boolean disponible, String ruta, String convocatoriaExamen);
+     public boolean crearEnunciado();
      public void consultarEnunciadosPorUnidad ();
      public void consultarConvocatoriasConEnunciado();
      public void visualizarTextoEnunciado();
