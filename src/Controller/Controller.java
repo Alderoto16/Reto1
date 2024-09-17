@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import Models.UnidadDidactica;
+import Utilidades.MySqlConnection;
 
 public class Controller implements IController {
 	private Connection connection;
@@ -77,6 +78,7 @@ public class Controller implements IController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+
     public static void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/tu_basededatos";
         String user = "root";
@@ -108,7 +110,4 @@ public class Controller implements IController {
             }
         }
     }
-
-
-    
 }
