@@ -10,25 +10,28 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import Models.UnidadDidactica;
+import Utilidades.MySqlConnection;
+import java.sql.Date;
 
 public class Controller implements IController {
     
+    private Connection connection = null;
     private PreparedStatement statement;
     private ResultSet resultSet;
     private CallableStatement callableStatement = null;
         
         //Querys
         final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
-        final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, decripcion, fecha, curso) VALUES (?, ?, ?, ?)";
-	final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
-        
+        final String INSERTconvocatoria = "INSERT INTO Convocatoria (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
+        final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
+
         
             @Override
         public boolean crearUnidad(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
 		boolean added = false;
 		try {
-
-			//statement = connection.prepareStatement(INSERTunidadDidactica);
+      connectionDB();
+			statement = connection.prepareStatement(INSERTunidadDidactica);
 			statement.setInt(1, id);
 			statement.setString(2, acronimo);
 			statement.setString(3, titulo);
@@ -49,12 +52,30 @@ public class Controller implements IController {
 
 
     @Override
-    public void crearConvocatoria() {
-        
+    public boolean crearConvocatoria(String convocatoria, String descripcion, Date fecha, String curso) {
+        boolean added = false;
+		try {
+                        connectionDB();
+			statement = connection.prepareStatement(INSERTunidadDidactica);
+			statement.setString(1, convocatoria);
+			statement.setString(2, descripcion);
+			statement.setDate(3, fecha);
+			statement.setString(4, curso);
+			if (statement.executeUpdate() > 0) {
+				added = true;
+				System.out.println("Data inserted!");
+			} else {
+				System.out.println("Failed!");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} 
+		return added;
     }
 
     @Override
-    public void crearEnunciado() {
+    public boolean crearEnunciado() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -78,14 +99,10 @@ public class Controller implements IController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-
-    public static void connectionDB() {
+    public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
         String password = "abcd*1234";
-
-        Connection connection = null;
-
         try {
             // Cargar el controlador JDBC
             Class.forName("com.mysql.cj.jdbc.Driver");

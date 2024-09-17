@@ -3,6 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
+            <file>file:/C:/Users/Alder/Desktop/RETOS/Reto1/src/Controller/Controller.java</file>
+=======
             <file>file:/C:/Users/2dam/Desktop/Reto1/src/Utilidades/MySqlConnection.java</file>
             <file>file:/C:/Users/2dam/Desktop/Reto1/src/Models/UnidadDidactica.java</file>
             <file>file:/C:/Users/2dam/Desktop/Reto1/src/Controller/main.java</file>
@@ -12,6 +15,7 @@
             <file>file:/C:/Users/2dam/Desktop/Reto1/src/Models/Enunciado.java</file>
             <file>file:/C:/Users/2dam/Desktop/Reto1/src/Models/Dificultad.java</file>
             <file>file:/C:/Users/2dam/Desktop/Reto1/src/Controller/IController.java</file>
+>>>>>>> cb56b3fde604b645d4578cac302b9456e5e5302a
         </group>
     </open-files>
 </project-private>
