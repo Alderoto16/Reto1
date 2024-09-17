@@ -11,7 +11,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import Models.UnidadDidactica;
+import Utilidades.Util;
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class Controller implements IController {
     
@@ -22,7 +24,7 @@ public class Controller implements IController {
         
         //Querys
         final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
-        final String INSERTconvocatoria = "INSERT INTO Convocatoria (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
+        final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
         final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
 
             @Override
@@ -51,11 +53,21 @@ public class Controller implements IController {
 
 
     @Override
-    public boolean crearConvocatoria(String convocatoria, String descripcion, Date fecha, String curso) {
+    public boolean crearConvocatoria() {
         boolean added = false;
+        System.out.println("Introduce el id:"); 
+        String convocatoria = Util.introducirCadena();
+        System.out.println("Introduce el descrpicion:"); 
+        String descripcion = Util.introducirCadena();
+        System.out.println("Introduce la fecha:"); 
+        LocalDate localDate =  Util.leerFechaAMD();
+        Date fecha = Date.valueOf(localDate);
+        System.out.println("Introduce el curso:"); 
+        String curso = Util.introducirCadena();
+        
 		try {
                         connectionDB();
-			statement = connection.prepareStatement(INSERTunidadDidactica);
+			statement = connection.prepareStatement(INSERTconvocatoria);
 			statement.setString(1, convocatoria);
 			statement.setString(2, descripcion);
 			statement.setDate(3, fecha);
