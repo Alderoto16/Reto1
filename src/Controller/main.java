@@ -1,9 +1,6 @@
 package Controller;
 
 import Utilidades.Util;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class main {
 
@@ -11,27 +8,7 @@ public class main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
-        String user = "root";
-        String password = "abcd*1234";
-
-        Connection connection = null;
-
-        try {
-            // Cargar el controlador JDBC
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            // Establecer la conexión
-            connection = DriverManager.getConnection(url, user, password);
-            // Si la conexión se establece con éxito
-            System.out.println("Conexión exitosa a la base de datos.");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Error: No se encontró el controlador JDBC.");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.out.println("Error al conectar a la base de datos.");
-            e.printStackTrace();
-        }
-
+        // TODO code application logic here
         int menu;
         do {
             showMenu();
@@ -69,5 +46,6 @@ public class main {
         System.out.println("Asignar un enunciado a una convocatoria.");
 
     }
+   
 
 }// end of main 
