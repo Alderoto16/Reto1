@@ -10,7 +10,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import Models.UnidadDidactica;
-import Utilidades.MySqlConnection;
 
 public class Controller implements IController {
 	private Connection connection;
@@ -27,7 +26,6 @@ public class Controller implements IController {
         public boolean crearUnidad(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
 		boolean added = false;
 		try {
-			connection = MySqlConnection.getInstance("entrenador").getConnection();
 
 			statement = connection.prepareStatement(INSERTunidadDidactica);
 			statement.setInt(1, id);
