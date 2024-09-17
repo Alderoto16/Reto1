@@ -13,10 +13,10 @@ import Models.UnidadDidactica;
 import Utilidades.MySqlConnection;
 
 public class Controller implements IController {
-	private Connection connection;
-	private PreparedStatement statement;
-	private ResultSet resultSet;
-	private CallableStatement callableStatement = null;
+    
+    private PreparedStatement statement;
+    private ResultSet resultSet;
+    private CallableStatement callableStatement = null;
         
         //Querys
         final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
@@ -50,7 +50,7 @@ public class Controller implements IController {
 
     @Override
     public void crearConvocatoria() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
@@ -80,7 +80,7 @@ public class Controller implements IController {
 
 
     public static void connectionDB() {
-        String url = "jdbc:mysql://localhost:3306/tu_basededatos";
+        String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
         String password = "abcd*1234";
 
@@ -99,15 +99,6 @@ public class Controller implements IController {
         } catch (SQLException e) {
             System.out.println("Error al conectar a la base de datos.");
             e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    System.out.println("Error al cerrar la conexión.");
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
