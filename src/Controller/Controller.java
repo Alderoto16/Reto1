@@ -24,11 +24,7 @@ public class Controller implements IController {
         final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
 	final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
         final String INSERTconvocatoria = "INSERT INTO Convocatoria (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
-        final String GETenunciadoPorUnidad =  "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen " +
-                     "FROM Enunciado e " +
-                     "JOIN UnidadDidactica_Enunciado ude ON e.id = ude.enunciado_id " +
-                     "JOIN UnidadDidactica ud ON ude.unidad_id = ud.id " +
-                     "WHERE ud.id = ?";
+        final String GETenunciadoPorUnidad =  "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen FROM Enunciado e WHERE e.id IN (SELECT enunciado_id FROM UnidadDidactica_Enunciado WHERE unidad_id = (SELECT id FROM UnidadDidactica where id=?))";
         
         
        
