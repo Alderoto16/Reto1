@@ -19,9 +19,7 @@ public class Controller implements IController {
         
         //Querys
         final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
-        final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, decripcion, fecha, curso) VALUES (?, ?, ?, ?)";
 	final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
-        
         
             @Override
         public boolean crearUnidad(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
