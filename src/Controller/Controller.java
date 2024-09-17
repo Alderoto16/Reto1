@@ -11,18 +11,44 @@ import java.sql.SQLException;
 
 import Models.Dificultad;
 import Models.UnidadDidactica;
+import Utilidades.MySqlConnection;
 
 public class Controller implements IController {
+	private Connection connection;
+	private PreparedStatement statement;
+	private ResultSet resultSet;
+	private CallableStatement callableStatement = null;
+        
+        //Querys
+        final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
 
-    private Connection connection;
-    private PreparedStatement statement;
-    private ResultSet resultSet;
-    private CallableStatement callableStatement = null;
+	
+        
+        
+        public boolean crearUnidad(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
+		boolean added = false;
+		try {
+			connection = MySqlConnection.getInstance("entrenador").getConnection();
 
-    @Override
-    public void crearUnidad() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+			statement = connection.prepareStatement(INSERTunidadDidactica);
+			statement.setInt(1, id);
+			statement.setString(2, acronimo);
+			statement.setString(3, titulo);
+			statement.setString(4, evaluacion);
+			statement.setString(5, descripcion);
+			if (statement.executeUpdate() > 0) {
+				added = true;
+				System.out.println("Data inserted!");
+			} else {
+				System.out.println("Failed!");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} 
+		return added;
+	}
+
 
     @Override
     public void crearConvocatoria() {
