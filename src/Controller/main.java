@@ -27,6 +27,7 @@ public class main {
                 case 3:
                     break;
                 case 4:
+                    controller.consultarEnunciadosPorUnidad();
                     break;
                 case 5:
                     break;

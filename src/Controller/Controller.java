@@ -24,6 +24,13 @@ public class Controller implements IController {
         final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
 	final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
         final String INSERTconvocatoria = "INSERT INTO Convocatoria (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
+        final String GETenunciadoPorUnidad =  "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen " +
+                     "FROM Enunciado e " +
+                     "JOIN UnidadDidactica_Enunciado ude ON e.id = ude.enunciado_id " +
+                     "JOIN UnidadDidactica ud ON ude.unidad_id = ud.id " +
+                     "WHERE ud.id = ?";
+        
+        
        
 
         
@@ -94,7 +101,43 @@ public class Controller implements IController {
 
     @Override
     public void consultarEnunciadosPorUnidad() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		try {   
+                    connectionDB();
+                    System.out.println("Introduce el ID de la unidad:");
+                    int id = Util.leerInt();
+                          
+			statement = connection.prepareStatement(GETenunciadoPorUnidad);
+			statement.setInt(1, id);
+                        
+                          ResultSet rs = statement.executeQuery();
+                        
+                        while (rs.next()) {
+                int enunciadoId = rs.getInt("id");
+                String descripcion = rs.getString("descripcion");
+                String nivel = rs.getString("nivel");
+                boolean disponible = rs.getBoolean("disponible");
+                String ruta = rs.getString("ruta");
+                String convocatoriaExamen = rs.getString("convocatoria_examen");
+
+                // Imprimimos los resultados
+                System.out.println("Enunciado ID: " + enunciadoId);
+                System.out.println("Descripción: " + descripcion);
+                System.out.println("Nivel: " + nivel);
+                System.out.println("Disponible: " + disponible);
+                System.out.println("Ruta: " + ruta);
+                System.out.println("Convocatoria Examen: " + convocatoriaExamen);
+                System.out.println("----------------------------------");
+            }
+                        
+			if (statement.executeUpdate() > 0) {
+				System.out.println("Data");
+			} else {
+				System.out.println("Failed!");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} 
     }
 
     @Override
