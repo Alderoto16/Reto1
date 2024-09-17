@@ -14,6 +14,7 @@ import Models.UnidadDidactica;
 
 public class Controller implements IController {
     
+    private Connection connection = null;
     private PreparedStatement statement;
     private ResultSet resultSet;
     private CallableStatement callableStatement = null;
@@ -57,8 +58,6 @@ public class Controller implements IController {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
         String password = "abcd*1234";
-
-        Connection connection = null;
 
         try {
             // Cargar el controlador JDBC
