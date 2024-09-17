@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS Enunciado (
 );
 
 CREATE TABLE IF NOT EXISTS UnidadDidactica_Enunciado (
-    unidad_id INTEGER,
+    unidad_id INTEGER ,
     enunciado_id INTEGER,
     PRIMARY KEY (unidad_id, enunciado_id),
     FOREIGN KEY (unidad_id) REFERENCES UnidadDidactica(id),

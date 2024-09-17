@@ -27,8 +27,10 @@ public class Controller implements IController {
     final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
     final String INSERTenunciado = "INSERT INTO Enunciado (id, descripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
     final String GETconvocatorias = "SELECT * FROM ConvocatoriaExamen";
-
-    @Override
+    final String INSERTunidad_id = "INSERT INTO UnidadDidactica_Enunciado (unidad_id, enunciado_id) VALUES (?, 0)";
+    final String UPDATEenunciado_id = "UPDATE UnidadDidactica_Enunciado SET enunciado_id WHERE unidad_id = ?";
+    
+     @Override
     public boolean crearUnidad() {
         boolean added = false;
         try {
@@ -43,8 +45,8 @@ public class Controller implements IController {
             String evaluacion = Util.introducirCadena();
             System.out.println("Introduce la descripcion de la unidad:");
             String descripcion = Util.introducirCadena();
-            //Insertar id en la tabla de relacion
 
+            // Insert into UnidadDidactica table
             statement = connection.prepareStatement(INSERTunidadDidactica);
             statement.setInt(1, id);
             statement.setString(2, acronimo);
@@ -52,10 +54,17 @@ public class Controller implements IController {
             statement.setString(4, evaluacion);
             statement.setString(5, descripcion);
             if (statement.executeUpdate() > 0) {
-                added = true;
-                System.out.println("Data inserted!");
+                // Insert into UnidadDidactica_Enunciado table
+                PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
+                insertUnidadIdStmt.setInt(1, id);
+                if (insertUnidadIdStmt.executeUpdate() > 0) {
+                    added = true;
+                    System.out.println("Data inserted into UnidadDidactica and UnidadDidactica_Enunciado!");
+                } else {
+                    System.out.println("Failed to insert into UnidadDidactica_Enunciado!");
+                }
             } else {
-                System.out.println("Failed!");
+                System.out.println("Failed to insert into UnidadDidactica!");
             }
         } catch (SQLException e) {
             System.out.println("Error de SQL");
@@ -63,6 +72,7 @@ public class Controller implements IController {
         }
         return added;
     }
+
 
     @Override
     public boolean crearConvocatoria() {
@@ -155,7 +165,6 @@ public class Controller implements IController {
                 System.out.println("La convocatoria no existe. Por favor, introduce una convocatoria válida.");
             }
         }
-        //Insertar id en la tabla de relacion
 
         try {
             connectionDB();
@@ -169,6 +178,17 @@ public class Controller implements IController {
             if (statement.executeUpdate() > 0) {
                 added = true;
                 System.out.println("Data inserted!");
+                
+                // Update the UnidadDidactica_Enunciado table
+                PreparedStatement updateEnunciadoIdStmt = connection.prepareStatement(UPDATEenunciado_id);
+                updateEnunciadoIdStmt.setInt(2, id);  // Assuming 'id' corresponds to 'unidad_id'
+                updateEnunciadoIdStmt.setInt(1, id);  // Set 'enunciado_id' here as needed
+                if (updateEnunciadoIdStmt.executeUpdate() > 0) {
+                    System.out.println("Enunciado ID updated!");
+                } else {
+                    System.out.println("Failed to update Enunciado ID!");
+                }
+                
             } else {
                 System.out.println("Failed!");
             }
