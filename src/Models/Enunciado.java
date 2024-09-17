@@ -1,3 +1,5 @@
+package Models;
+
 public class Enunciado {
     private int id;
     private String descripcion;
@@ -20,6 +22,9 @@ public class Enunciado {
         this.ruta = ruta;
         this.convocatoriaExamen = convocatoriaExamen;
     }
+    
+    public Enunciado(){
+    };
 
     public int getId() {
         return id;
