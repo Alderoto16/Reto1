@@ -1,5 +1,6 @@
 package Controller;
 
+import Models.Dificultad;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import Models.UnidadDidactica;
-import Utilidades.MySqlConnection;
 import java.sql.Date;
 
 public class Controller implements IController {
@@ -25,7 +25,6 @@ public class Controller implements IController {
         final String INSERTconvocatoria = "INSERT INTO Convocatoria (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
         final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
 
-        
             @Override
         public boolean crearUnidad(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
 		boolean added = false;
@@ -75,8 +74,28 @@ public class Controller implements IController {
     }
 
     @Override
-    public boolean crearEnunciado() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean crearEnunciado(int id, String descripcion, String nivel, boolean disponible, String ruta, String convocatoriaExamen) {
+        boolean added = false;
+		try {
+                        connectionDB();
+			statement = connection.prepareStatement(INSERTenunciado);
+			statement.setInt(1, id);
+			statement.setString(2, descripcion);
+			statement.setString(3, nivel);
+			statement.setBoolean(4, disponible);
+                        statement.setString(5, ruta);
+                        statement.setString(6, convocatoriaExamen);
+			if (statement.executeUpdate() > 0) {
+				added = true;
+				System.out.println("Data inserted!");
+			} else {
+				System.out.println("Failed!");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} 
+		return added;
     }
 
     @Override
