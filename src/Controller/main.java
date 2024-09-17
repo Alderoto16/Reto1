@@ -2,6 +2,7 @@ package Controller;
 
 import Utilidades.Util;
 
+
 public class main {
 
     /**
@@ -11,15 +12,18 @@ public class main {
         // TODO code application logic here
         Controller controller = new Controller();
         int menu;
+        boolean added;
         do {
             showMenu();
             menu = Util.leerInt("¿Que desea hacer?", 0, 7);
             switch (menu) {
 
                 case 1:
+                  added = controller.crearUnidad();
+                  System.out.println(added);
                     break;
                 case 2:
-                    controller.crearConvocatoria();
+                    added = controller.crearConvocatoria();
                     break;
                 case 3:
                     break;

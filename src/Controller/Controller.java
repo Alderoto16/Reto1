@@ -28,10 +28,22 @@ public class Controller implements IController {
         final String INSERTenunciado = "INSERT INTO Enunciado (id, decripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
 
             @Override
-        public boolean crearUnidad(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
+        public boolean crearUnidad() {
 		boolean added = false;
-		try {
-      connectionDB();
+		try {   
+                    connectionDB();
+                    System.out.println("Introduce el ID de la unidad:");
+                    int id = Util.leerInt();
+                    System.out.println("Introduce el acronimo de la unidad:");
+                    String acronimo = Util.introducirCadena();
+                    System.out.println("Introduce el titulo de la unidad:");
+                    String titulo = Util.introducirCadena();
+                    System.out.println("Introduce la evaluacion de la unidad:");
+                    String evaluacion = Util.introducirCadena();
+                    System.out.println("Introduce la descripcion de la unidad:");
+                    String descripcion = Util.introducirCadena();
+                    
+                    
 			statement = connection.prepareStatement(INSERTunidadDidactica);
 			statement.setInt(1, id);
 			statement.setString(2, acronimo);
