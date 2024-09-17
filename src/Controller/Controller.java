@@ -10,11 +10,12 @@ import Models.Dificultad;
 import Models.Enunciado;
 import Models.Enunciado.Nivel;
 import Models.UnidadDidactica;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 
 public class Controller implements IController {
 
-    private Connection connection;
+    private Connection connection=null;
     private PreparedStatement statement;
     private ResultSet resultSet;
     private CallableStatement callableStatement = null;
@@ -63,9 +64,8 @@ public class Controller implements IController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public Enunciado consultarEnunciadosPorUnidad(int id) {
-        connection = DatabaseConnection.getConnection();
+    public  Enunciado consultarEnunciadosPorUnidad() {
+        connectionDB();
         ResultSet resultSet = null;
         Enunciado enunuciado = null;
         ArrayList<Enunciado> enunciadosArray = new ArrayList<Enunciado>();
@@ -115,6 +115,31 @@ public class Controller implements IController {
             
         }
         return null;
+    }
+    
+    
+public void connectionDB() {
+        String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
+        String user = "root";
+        String password = "abcd*1234";
+        try {
+            // Cargar el controlador JDBC
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Establecer la conexión
+            connection = DriverManager.getConnection(url, user, password);
+            // Si la conexión se establece con éxito
+            System.out.println("Conexión exitosa a la base de datos.");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Error: No se encontró el controlador JDBC.");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Error al conectar a la base de datos.");
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public Enunciado consultarEnunciadosPorUnidad(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

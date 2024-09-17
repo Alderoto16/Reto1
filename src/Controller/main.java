@@ -9,6 +9,7 @@ public class main {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+         Controller controller = new Controller();
         int menu;
         do {
             showMenu();
@@ -22,7 +23,7 @@ public class main {
                 case 3:
                     break;
                 case 4:
-                    Controller.consultarEnunciadosPorUnidad();
+                    controller.consultarEnunciadosPorUnidad();
                     break;
                 case 5:
                     break;

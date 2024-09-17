@@ -20,10 +20,6 @@ public class DatabaseConnection{
 		}
 	}
 	
-	/*
-	* 	El método devuelve una conexión a la base de datos como un usuario policia.
-	* 	@return Connection connection
-	*/
 	
 	public static Connection getConnection() {
 		return connection;
