@@ -76,7 +76,18 @@ public class Enunciado {
 
     @Override
     public String toString() {
-        return "Enunciado{" + "id=" + id + ", descripcion=" + descripcion + ", nivel=" + nivel + ", disponible=" + disponible + ", ruta=" + ruta + ", convocatoriaExamen=" + convocatoriaExamen + '}';
+        System.out.println("Enunciado: ");
+        System.out.println("ID: "+id);
+        System.out.println("Descripción: "+descripcion);
+        System.out.println("Nivel: "+nivel);
+        System.out.println("Disponible: "+disponible);
+        System.out.println("Ruta: "+ruta);
+        System.out.println("Convocatoria examen: "+convocatoriaExamen);
+        
+        
+        
+        
+        return "";
     }
     
     
