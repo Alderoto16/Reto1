@@ -44,14 +44,14 @@ public class main {
     }
 
     public static void showMenu() {
-        System.out.println("Crear una unidad didáctica (Unidad)");
-        System.out.println("Crear una Convocatoria de examen");
-        System.out.println("Crear un enunciado de examen agregando las unidades didácticas que va a referir. También\n"
+        System.out.println("1. Crear una unidad didáctica (Unidad)");
+        System.out.println("2. Crear una Convocatoria de examen");
+        System.out.println("3 .Crear un enunciado de examen agregando las unidades didácticas que va a referir. También\n"
                 + "se asociará a este enunciado la convocatoria para la que se crea.");
-        System.out.println("Consultar los enunciados de examen en los que se trata una unidad didáctica concreta.");
-        System.out.println("Consultar en que convocatorias se ha utilizado un enunciado concreto.");
-        System.out.println("Visualizar el documento de texto asociado a un enunciado");
-        System.out.println("Asignar un enunciado a una convocatoria.");
+        System.out.println("4. Consultar los enunciados de examen en los que se trata una unidad didáctica concreta.");
+        System.out.println("5. Consultar en que convocatorias se ha utilizado un enunciado concreto.");
+        System.out.println("6. Visualizar el documento de texto asociado a un enunciado");
+        System.out.println("7. Asignar un enunciado a una convocatoria.");
 
     }
    
