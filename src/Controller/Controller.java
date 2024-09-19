@@ -22,8 +22,9 @@ public class Controller implements IController {
     final String CHECKIDUNIDAD = "SELECT id FROM UnidadDidactica WHERE id = ?";
     final String CHECKIDCONVOCATORIA = "SELECT convocatoria FROM ConvocatoriaExamen WHERE convocatoria = ?";
     final String CHECKIDENUNCIADO = "SELECT id FROM Enunciado WHERE id = ?";
+     final String GETenunciadoPorUnidad =  "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen FROM Enunciado e WHERE e.id IN (SELECT enunciado_id FROM UnidadDidactica_Enunciado WHERE unidad_id = (SELECT id FROM UnidadDidactica where id=?))";
 
-    private void connectionDB() {
+    public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
         String password = "abcd*1234";
@@ -271,9 +272,45 @@ public class Controller implements IController {
         return added;
     }
 
-    @Override
+     @Override
     public void consultarEnunciadosPorUnidad() {
-        throw new UnsupportedOperationException("Not supported yet.");
+		try {   
+                    connectionDB();
+                    System.out.println("Introduce el ID de la unidad:");
+                    int id = Util.leerInt();
+                          
+			statement = connection.prepareStatement(GETenunciadoPorUnidad);
+			statement.setInt(1, id);
+                        
+                          ResultSet rs = statement.executeQuery();
+                        
+                        while (rs.next()) {
+                int enunciadoId = rs.getInt("id");
+                String descripcion = rs.getString("descripcion");
+                String nivel = rs.getString("nivel");
+                boolean disponible = rs.getBoolean("disponible");
+                String ruta = rs.getString("ruta");
+                String convocatoriaExamen = rs.getString("convocatoria_examen");
+
+                // Imprimimos los resultados
+                System.out.println("Enunciado ID: " + enunciadoId);
+                System.out.println("Descripción: " + descripcion);
+                System.out.println("Nivel: " + nivel);
+                System.out.println("Disponible: " + disponible);
+                System.out.println("Ruta: " + ruta);
+                System.out.println("Convocatoria Examen: " + convocatoriaExamen);
+                System.out.println("----------------------------------");
+            }
+                        
+			if (statement.executeUpdate() > 0) {
+				System.out.println("Data");
+			} else {
+				System.out.println("Failed!");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error de SQL");
+			e.printStackTrace();
+		} 
     }
 
     @Override

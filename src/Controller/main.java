@@ -29,6 +29,7 @@ public class main {
                     added = controller.crearEnunciado();
                     break;
                 case 4:
+                    controller.consultarEnunciadosPorUnidad();
                     break;
                 case 5:
                     break;
