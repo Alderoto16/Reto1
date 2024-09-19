@@ -210,6 +210,8 @@ public class Controller implements IController {
             if (!comprobarUnidades() || !comprobarConvocatorias()) {
                 System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
                 return false;
+            }else{
+                mostrarConvocatorias();
             }
 
             int id;
