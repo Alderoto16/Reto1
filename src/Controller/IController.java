@@ -6,8 +6,8 @@ import java.sql.Date;
 
 public interface IController {
     
-      public boolean crearUnidad();
-     public boolean crearConvocatoria(String convocatoria, String descripcion, Date fecha, String curso);
+     public boolean crearUnidad();
+     public boolean crearConvocatoria();
      public boolean crearEnunciado();
      public void consultarEnunciadosPorUnidad ();
      public void consultarConvocatoriasConEnunciado();
