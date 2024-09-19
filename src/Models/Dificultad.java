@@ -1,5 +1,5 @@
 package Models;
 
 public enum Dificultad {
-    ALTA, MEDI, BAJA
+    ALTO, MEDIO, BAJO
 }

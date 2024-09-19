@@ -1,5 +1,6 @@
 package Utilidades;
 
+import Models.Dificultad;
 import java.io.*;
 
 import java.time.LocalDate;
@@ -331,5 +332,36 @@ public class Util {
 		} while (error);
 		return date;
 	}
+        
+        public static Dificultad stringToEnum() {
+        while (true) {
+            System.out.print("Introduce el nivel (BAJO, MEDIO, ALTO): ");
+            String input =  introducirCadena().toUpperCase(); // Convierte a mayúsculas para manejar casos de entrada
+
+            try {
+                // Intentar convertir el String a un valor del enum
+                return Dificultad.valueOf(input);
+            } catch (IllegalArgumentException e) {
+                // Si el valor no es válido, se captura la excepción y se muestra un mensaje
+                System.out.println("Valor no válido. Por favor, introduce uno de los siguientes valores: BAJO, MEDIO, ALTO.");
+            }
+        }
+    }
+        
+        public static boolean leerBooleano() {
+
+        while (true) {
+            System.out.print("Introduce 'true' o 'false': ");
+            String input = introducirCadena().trim().toLowerCase(); // Leer y normalizar la entrada
+
+            if ("true".equals(input)) {
+                return true;
+            } else if ("false".equals(input)) {
+                return false;
+            } else {
+                System.out.println("Entrada no válida. Por favor, introduce 'true' o 'false'.");
+            }
+        }
+    }
 
 }
