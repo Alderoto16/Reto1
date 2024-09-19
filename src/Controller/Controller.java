@@ -14,7 +14,7 @@ public class Controller implements IController {
 
     // Queries
     final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
-    final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, descripcion, fecha, curso) VALUES (?, ?, ?, ?)";
+    final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, descripcion, fecha, curso, enunciadoID) VALUES (?, ?, ?, ?, ?)";
     final String INSERTenunciado = "INSERT INTO Enunciado (id, descripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
     final String GETconvocatorias = "SELECT * FROM ConvocatoriaExamen";
     final String GETunidades = "SELECT id FROM UnidadDidactica";
@@ -23,7 +23,9 @@ public class Controller implements IController {
     final String CHECKIDCONVOCATORIA = "SELECT convocatoria FROM ConvocatoriaExamen WHERE convocatoria = ?";
     final String CHECKIDENUNCIADO = "SELECT id FROM Enunciado WHERE id = ?";
      final String GETenunciadoPorUnidad =  "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen FROM Enunciado e WHERE e.id IN (SELECT enunciado_id FROM UnidadDidactica_Enunciado WHERE unidad_id = (SELECT id FROM UnidadDidactica where id=?))";
-
+    
+     
+     
     public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
@@ -169,6 +171,8 @@ public class Controller implements IController {
             statement.setString(2, descripcion);
             statement.setDate(3, fecha);
             statement.setString(4, curso);
+            statement.setNull(5, java.sql.Types.INTEGER);
+            
             if (statement.executeUpdate() > 0) {
                 added = true;
                 System.out.println("Data inserted!");
@@ -320,7 +324,7 @@ public class Controller implements IController {
 
     @Override
     public void visualizarTextoEnunciado() {
-        throw new UnsupportedOperationException("Not supported yet.");
+       
     }
 
     @Override
