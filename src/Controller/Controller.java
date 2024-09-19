@@ -22,7 +22,7 @@ public class Controller implements IController {
     final String CHECKIDUNIDAD = "SELECT id FROM UnidadDidactica WHERE id = ?";
     final String CHECKIDCONVOCATORIA = "SELECT convocatoria FROM ConvocatoriaExamen WHERE convocatoria = ?";
     final String CHECKIDENUNCIADO = "SELECT id FROM Enunciado WHERE id = ?";
-     final String GETenunciadoPorUnidad =  "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen FROM Enunciado e WHERE e.id IN (SELECT enunciado_id FROM UnidadDidactica_Enunciado WHERE unidad_id = (SELECT id FROM UnidadDidactica where id=?))";
+    final String GETenunciadoPorUnidad = "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen FROM Enunciado e WHERE e.id IN (SELECT enunciado_id FROM UnidadDidactica_Enunciado WHERE unidad_id = (SELECT id FROM UnidadDidactica where id=?))";
 
     public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
@@ -181,8 +181,8 @@ public class Controller implements IController {
         }
         return added;
     }
-    
-     public void mostrarConvocatorias() {
+
+    public void mostrarConvocatorias() {
         try {
             connectionDB();
             System.out.println("Convocatorias disponibles:");
@@ -198,93 +198,120 @@ public class Controller implements IController {
         }
     }
 
-    @Override
-    public boolean crearEnunciado() {
-        boolean added = false;
-        try {
-            connectionDB();
-            if (!comprobarUnidades() || !comprobarConvocatorias()) {
-                System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
-                return false;
-            }
+   @Override
+public boolean crearEnunciado() {
+    boolean added = false;
+    try {
+        connectionDB();
+        if (!comprobarUnidades() || !comprobarConvocatorias()) {
+            System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
+            return false;
+        }
 
-            int id;
+        int id;
+        while (true) {
+            System.out.println("Introduce el id: ");
+            id = Util.leerInt();
+            if (!isEnunciadoExists(id)) {
+                break;
+            }
+            System.out.println("El ID del enunciado ya existe. Por favor, introduce un ID único.");
+        }
+
+        System.out.println("Introduce la descripcion: ");
+        String descripcion = Util.introducirCadena();
+        Dificultad nivel = Util.stringToEnum();
+        System.out.println("Introduce la disponibilidad: ");
+        boolean disponible = Util.leerBooleano();
+        System.out.println("Introduce la ruta: ");
+        String ruta = Util.introducirCadena();
+        mostrarConvocatorias();
+        String convocatoriaExamen;
+        while (true) {
+            System.out.println("Introduce la convocatoria del examen: ");
+            convocatoriaExamen = Util.introducirCadena();
+            if (isConvocatoriaExists(convocatoriaExamen)) {
+                break;
+            }
+            System.out.println("La convocatoria no existe. Por favor, introduce una convocatoria válida.");
+        }
+
+        statement = connection.prepareStatement(INSERTenunciado);
+        statement.setInt(1, id);
+        statement.setString(2, descripcion);
+        statement.setString(3, nivel.name());
+        statement.setBoolean(4, disponible);
+        statement.setString(5, ruta);
+        statement.setString(6, convocatoriaExamen);
+        if (statement.executeUpdate() > 0) {
+            added = true;
+            System.out.println("Data inserted!");
+
+            // Allow multiple units to be linked to the enunciado
             while (true) {
-                System.out.println("Introduce el id: ");
-                id = Util.leerInt();
-                if (!isEnunciadoExists(id)) {
-                    break;
-                }
-                System.out.println("El ID del enunciado ya existe. Por favor, introduce un ID único.");
-            }
-
-            System.out.println("Introduce la descripcion: ");
-            String descripcion = Util.introducirCadena();
-            Dificultad nivel = Util.stringToEnum();
-            System.out.println("Introduce la disponibilidad: ");
-            boolean disponible = Util.leerBooleano();
-            System.out.println("Introduce la ruta: ");
-            String ruta = Util.introducirCadena();
-            mostrarConvocatorias();
-            String convocatoriaExamen;
-            while (true) {
-                System.out.println("Introduce la convocatoria del examen: ");
-                convocatoriaExamen = Util.introducirCadena();
-                if (isConvocatoriaExists(convocatoriaExamen)) {
-                    break;
-                }
-                System.out.println("La convocatoria no existe. Por favor, introduce una convocatoria válida.");
-            }
-
-            statement = connection.prepareStatement(INSERTenunciado);
-            statement.setInt(1, id);
-            statement.setString(2, descripcion);
-            statement.setString(3, nivel.name());
-            statement.setBoolean(4, disponible);
-            statement.setString(5, ruta);
-            statement.setString(6, convocatoriaExamen);
-            if (statement.executeUpdate() > 0) {
-                added = true;
-                System.out.println("Data inserted!");
-
-                // Link Enunciado with UnidadDidactica
-                System.out.println("Introduce el ID de la unidad con la que enlazar el enunciado:");
+                System.out.println("Introduce el ID de la unidad con la que enlazar el enunciado (0 para finalizar):");
                 int unidadId = Util.leerInt();
+                if (unidadId == 0) {
+                    break;
+                }
                 if (isIDExists(CHECKIDUNIDAD, unidadId)) {
-                    PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
-                    insertUnidadIdStmt.setInt(1, unidadId);
-                    insertUnidadIdStmt.setInt(2, id); // Set enunciado_id
-                    if (insertUnidadIdStmt.executeUpdate() > 0) {
-                        System.out.println("Enunciado vinculado a la unidad!");
+                    if (!isUnidadEnunciadoExists(unidadId, id)) {
+                        PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
+                        insertUnidadIdStmt.setInt(1, unidadId);
+                        insertUnidadIdStmt.setInt(2, id); // Set enunciado_id
+                        if (insertUnidadIdStmt.executeUpdate() > 0) {
+                            System.out.println("Unidad vinculada al enunciado!");
+                        } else {
+                            System.out.println("Failed to link UnidadDidactica to Enunciado!");
+                        }
                     } else {
-                        System.out.println("Failed to link Enunciado to UnidadDidactica!");
+                        System.out.println("La unidad ya está vinculada a este enunciado.");
                     }
                 } else {
                     System.out.println("El ID de la unidad no existe.");
                 }
-            } else {
-                System.out.println("Failed to insert enunciado!");
             }
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
+        } else {
+            System.out.println("Failed to insert enunciado!");
         }
-        return added;
+    } catch (SQLException e) {
+        System.out.println("Error de SQL");
+        e.printStackTrace();
     }
+    return added;
+}
+private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
+    boolean exists = false;
+    String query = "SELECT COUNT(*) FROM UnidadDidactica_Enunciado WHERE unidad_id = ? AND enunciado_id = ?";
+    try {
+        PreparedStatement stmt = connection.prepareStatement(query);
+        stmt.setInt(1, unidadId);
+        stmt.setInt(2, enunciadoId);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next() && rs.getInt(1) > 0) {
+            exists = true;
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al verificar la relación UnidadDidactica-Enunciado.");
+        e.printStackTrace();
+    }
+    return exists;
+}
 
-     @Override
+
+    @Override
     public void consultarEnunciadosPorUnidad() {
-		try {   
-                    connectionDB();
-                    System.out.println("Introduce el ID de la unidad:");
-                    int id = Util.leerInt();
-                          
-			statement = connection.prepareStatement(GETenunciadoPorUnidad);
-			statement.setInt(1, id);
-                        
-                          ResultSet rs = statement.executeQuery();
-                        
-                        while (rs.next()) {
+        try {
+            connectionDB();
+            System.out.println("Introduce el ID de la unidad:");
+            int id = Util.leerInt();
+
+            statement = connection.prepareStatement(GETenunciadoPorUnidad);
+            statement.setInt(1, id);
+
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
                 int enunciadoId = rs.getInt("id");
                 String descripcion = rs.getString("descripcion");
                 String nivel = rs.getString("nivel");
@@ -301,16 +328,16 @@ public class Controller implements IController {
                 System.out.println("Convocatoria Examen: " + convocatoriaExamen);
                 System.out.println("----------------------------------");
             }
-                        
-			if (statement.executeUpdate() > 0) {
-				System.out.println("Data");
-			} else {
-				System.out.println("Failed!");
-			}
-		} catch (SQLException e) {
-			System.out.println("Error de SQL");
-			e.printStackTrace();
-		} 
+
+            if (statement.executeUpdate() > 0) {
+                System.out.println("Data");
+            } else {
+                System.out.println("Failed!");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error de SQL");
+            e.printStackTrace();
+        }
     }
 
     @Override
