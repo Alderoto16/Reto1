@@ -23,6 +23,10 @@ public class Controller implements IController {
     final String CHECKIDCONVOCATORIA = "SELECT convocatoria FROM ConvocatoriaExamen WHERE convocatoria = ?";
     final String CHECKIDENUNCIADO = "SELECT id FROM Enunciado WHERE id = ?";
 
+    final String AsignarEnunciadoConvocatoria = "UPDATE Enunciado SET convocatoria_examen = ? WHERE id = ?";
+
+    
+
     private void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
@@ -278,7 +282,9 @@ public class Controller implements IController {
 
     @Override
     public void consultarConvocatoriasConEnunciado() {
-        throw new UnsupportedOperationException("Not supported yet.");
+       
+        
+        
     }
 
     @Override
@@ -287,7 +293,44 @@ public class Controller implements IController {
     }
 
     @Override
-    public void asignarEnunciadoConvocatoria() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void asignarEnunciadoConvocatoria(int enunciadoId, String convocatoriaId) {
+    try {
+            connectionDB();
+            statement = connection.prepareStatement(AsignarEnunciadoConvocatoria);
+            resultSet = statement.executeQuery();
+        // Set the parameters in the query
+            statement.setString(1, convocatoriaId);
+            statement.setInt(2, enunciadoId);
+
+            // Execute the update
+            int rowsUpdated = statement.executeUpdate();
+            
+            if (rowsUpdated > 0) {
+                System.out.println("Enunciado assigned to Convocatoria successfully.");
+            } else {
+                System.out.println("Enunciado or Convocatoria not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close the resources
+            try {
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
+    
 }
+
+
+
+
+
+    
+   
+
+       
+

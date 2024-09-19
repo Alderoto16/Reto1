@@ -12,7 +12,9 @@ public interface IController {
      public void consultarEnunciadosPorUnidad ();
      public void consultarConvocatoriasConEnunciado();
      public void visualizarTextoEnunciado();
-     public void asignarEnunciadoConvocatoria();
+
+
+    public void  asignarEnunciadoConvocatoria(int enunciadoId, String convocatoriaId);
          
     
     
