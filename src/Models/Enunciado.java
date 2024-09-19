@@ -74,4 +74,11 @@ public class Enunciado {
         this.convocatoriaExamen = convocatoriaExamen;
     }
 
+    @Override
+    public String toString() {
+        return "Enunciado{" + "id=" + id + ", descripcion=" + descripcion + ", nivel=" + nivel + ", disponible=" + disponible + ", ruta=" + ruta + ", convocatoriaExamen=" + convocatoriaExamen + '}';
+    }
+    
+    
+
 }

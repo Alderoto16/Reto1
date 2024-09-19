@@ -15,24 +15,16 @@ import java.util.ArrayList;
 
 public class Controller implements IController {
 
-    private Connection connection=null;
+    private Connection connection = null;
     private PreparedStatement statement;
     private ResultSet resultSet;
     private CallableStatement callableStatement = null;
 
-    private final String RETURN_ENUNCIADOS_UNIDAD = "SELECT \n" +
-"    e.id AS enunciado_id,\n" +
-"    e.descripcion AS enunciado_descripcion,\n" +
-"    e.nivel AS nivel_dificultad,\n" +
-"    e.disponible AS disponible,\n" +
-"    e.ruta AS ruta_enunciado,\n" +
-"    e.convocatoria_examen AS convocatoria\n" +
-"FROM \n" +
-"    UnidadDidactica_Enunciado ue\n" +
-"JOIN \n" +
-"    Enunciado e ON ue.enunciado_id = e.id\n" +
-"WHERE \n" +
-"    ue.unidad_id = ?";
+    private final String RETURN_ENUNCIADOS_UNIDAD = "SELECT E.id, E.descripcion, E.nivel, E.disponible, E.ruta, E.convocatoria_examen"
+            + " FROM Enunciado E "
+            + "JOIN UnidadDidactica_Enunciado UDE ON E.id = UDE.enunciado_id "
+            + "JOIN UnidadDidactica UD ON UDE.unidad_id = UD.id"
+            + " WHERE UD.acronimo = ?;";
 
     @Override
     public void crearUnidad() {
@@ -64,19 +56,19 @@ public class Controller implements IController {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public  Enunciado consultarEnunciadosPorUnidad() {
+    public Enunciado consultarEnunciadosPorUnidad() {
         connectionDB();
         ResultSet resultSet = null;
         Enunciado enunuciado = null;
         ArrayList<Enunciado> enunciadosArray = new ArrayList<Enunciado>();
-        int idBuscar=0;
-        System.out.println("Introduce el ID de la unidad: ");
-        idBuscar=Utilidades.Util.leerInt();
+        String idBuscar;
+        System.out.println("Introduce el acronimo de la unidad: ");
+        idBuscar = Utilidades.Util.introducirCadena();
 
         try {
 
             statement = connection.prepareStatement(RETURN_ENUNCIADOS_UNIDAD);
-            statement.setInt(1, idBuscar);
+            statement.setString(1, idBuscar);
 
             resultSet = statement.executeQuery();
 
@@ -85,14 +77,15 @@ public class Controller implements IController {
                 Enunciado enunciado = new Enunciado();
 
                 enunciado.setId(resultSet.getInt("id"));
-                enunciado.setDescripcion("descripcion");
+                enunciado.setDescripcion(resultSet.getString("descripcion"));
+
                 String nivelStr = resultSet.getString("nivel");
-                Nivel nivelEnum = Nivel.valueOf(nivelStr.toUpperCase()); 
+                Nivel nivelEnum = Nivel.valueOf(nivelStr.toUpperCase());
                 enunciado.setNivel(nivelEnum);
                 boolean disponible = resultSet.getBoolean("disponible");
                 enunciado.setDisponible(disponible);
                 enunciado.setRuta(resultSet.getString("ruta"));
-                enunciado.setConvocatoriaExamen("convocatoria_examen");
+                enunciado.setConvocatoriaExamen(resultSet.getString("convocatoria_examen"));
 
                 enunciadosArray.add(enunciado);
             }
@@ -109,16 +102,20 @@ public class Controller implements IController {
                 }
             }
         }
-        for (int i = 0; i < enunciadosArray.size(); i++) {
-            
-              System.out.println(enunciadosArray.get(i));
-            
+        if (enunciadosArray.size() > 0) {
+            for (int i = 0; i < enunciadosArray.size(); i++) {
+
+                System.out.println(enunciadosArray.get(i).toString());
+
+            }
+        } else {
+            System.out.println("Ese enunciado de examen no existe");
         }
+
         return null;
     }
-    
-    
-public void connectionDB() {
+
+    public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
         String password = "abcd*1234";
@@ -137,6 +134,7 @@ public void connectionDB() {
             e.printStackTrace();
         }
     }
+
     @Override
     public Enunciado consultarEnunciadosPorUnidad(int id) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
