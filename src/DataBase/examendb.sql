@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS ConvocatoriaExamen (
 );
 
 CREATE TABLE IF NOT EXISTS UnidadDidactica_Enunciado (
-    unidad_id INTEGER primary key,
+    unidad_id INTEGER,
     enunciado_id INTEGER,
     FOREIGN KEY (unidad_id) REFERENCES UnidadDidactica(id),
     FOREIGN KEY (enunciado_id) REFERENCES Enunciado(id)

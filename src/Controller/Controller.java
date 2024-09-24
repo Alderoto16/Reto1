@@ -253,7 +253,7 @@ public boolean crearEnunciado() {
         // Ruta del archivo o documento
         System.out.println("Introduce la ruta del enunciado: ");
         String ruta = Util.introducirCadena();
-        
+       
 
         // Insertar el enunciado en la base de datos
         statement = connection.prepareStatement(INSERTenunciado);
