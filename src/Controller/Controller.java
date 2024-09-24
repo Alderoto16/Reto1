@@ -526,6 +526,46 @@ public class Controller implements IController {
         }
     }
 
+    
+    //to get file from db
+    public String getFilePathFromDatabase(int id) {
+        String path = null;
+        try {
+            String sql = "SELECT ruta FROM Enunciado WHERE id = ?";
+            this.openConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                path = rs.getString("ruta");
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        } finally {
+            closeConnection();
+        }
+        return path;
+    } 
+    
+      // ge list of enunciados id that exit in our DB
+    public ArrayList<Integer> getEnunciadosIDList() {
+        ArrayList<Integer> enunciadosIDList = new ArrayList();
+        try {
+            String sql = "SELECT id FROM Enunciado";
+            this.openConnection();
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                enunciadosIDList.add(id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        return enunciadosIDList;
+    }
     private void openConnection() {
         try {
 
