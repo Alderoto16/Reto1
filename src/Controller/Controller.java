@@ -4,6 +4,8 @@ import Models.Dificultad;
 import Utilidades.Util;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Controller implements IController {
 
@@ -214,15 +216,6 @@ public boolean crearEnunciado() {
             return false;
         }
 
-        // Mostrar unidades didácticas
-        System.out.println("Unidades Didácticas disponibles:");
-        PreparedStatement mostrarUnidadesStmt = connection.prepareStatement(GETunidades);
-        ResultSet unidadesResultSet = mostrarUnidadesStmt.executeQuery();
-        while (unidadesResultSet.next()) {
-            int unidadId = unidadesResultSet.getInt("id");
-            System.out.println("ID: " + unidadId);
-        }
-
         // Solicitar un ID único para el enunciado
         int id;
         while (true) {
@@ -253,7 +246,6 @@ public boolean crearEnunciado() {
         // Ruta del archivo o documento
         System.out.println("Introduce la ruta del enunciado: ");
         String ruta = Util.introducirCadena();
-       
 
         // Insertar el enunciado en la base de datos
         statement = connection.prepareStatement(INSERTenunciado);
@@ -285,25 +277,54 @@ public boolean crearEnunciado() {
         updateConvocatoriaStmt.executeUpdate();
         System.out.println("Convocatoria actualizada correctamente con el enunciado.");
 
-        // Vincular el enunciado a una unidad didáctica
-        int unidadId;
-        while (true) {
-            System.out.println("Introduce el ID de la unidad con la que enlazar el enunciado:");
-            unidadId = Util.leerInt();
-            if (isIDExists(CHECKIDUNIDAD, unidadId)) {
-                // Si el ID es válido, insertar la relación
-                PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
-                insertUnidadIdStmt.setInt(1, unidadId);
-                insertUnidadIdStmt.setInt(2, id); // Set enunciado_id
+        // Mostrar unidades didácticas
+        System.out.println("Unidades Didácticas disponibles:");
+        PreparedStatement mostrarUnidadesStmt = connection.prepareStatement(GETunidades);
+        ResultSet unidadesResultSet = mostrarUnidadesStmt.executeQuery();
 
-                if (insertUnidadIdStmt.executeUpdate() > 0) {
-                    System.out.println("Enunciado vinculado a la unidad correctamente!");
-                } else {
-                    System.out.println("Error al vincular el enunciado con la unidad didáctica.");
-                }
-                break; // Salir del bucle si el ID fue válido y se insertó correctamente
+        List<Integer> unidadIds = new ArrayList<>();
+        int totalUnidades = 0;
+
+        while (unidadesResultSet.next()) {
+            int unidadId = unidadesResultSet.getInt("id");
+            System.out.println("ID: " + unidadId);
+            unidadIds.add(unidadId);
+            totalUnidades++;
+        }
+
+        // Preguntar cuántas unidades didácticas desea introducir
+        System.out.println("Cuántas unidades didácticas desea introducir (máximo " + totalUnidades + "): ");
+        int cantidadUnidades;
+        while (true) {
+            cantidadUnidades = Util.leerInt();
+            if (cantidadUnidades > 0 && cantidadUnidades <= totalUnidades) {
+                break;
             } else {
-                System.out.println("El ID de la unidad no existe. Intenta de nuevo.");
+                System.out.println("Número inválido. Debe ser entre 1 y " + totalUnidades + ".");
+            }
+        }
+
+        // Vincular el enunciado a las unidades didácticas seleccionadas
+        for (int i = 0; i < cantidadUnidades; i++) {
+            int unidadId;
+            while (true) {
+                System.out.println("Introduce el ID de la unidad " + (i + 1) + ":");
+                unidadId = Util.leerInt();
+                if (unidadIds.contains(unidadId)) {
+                    // Si el ID es válido, insertar la relación
+                    PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
+                    insertUnidadIdStmt.setInt(1, unidadId);
+                    insertUnidadIdStmt.setInt(2, id); // Set enunciado_id
+
+                    if (insertUnidadIdStmt.executeUpdate() > 0) {
+                        System.out.println("Enunciado vinculado a la unidad correctamente!");
+                    } else {
+                        System.out.println("Error al vincular el enunciado con la unidad didáctica.");
+                    }
+                    break; // Salir del bucle si el ID fue válido y se insertó correctamente
+                } else {
+                    System.out.println("El ID de la unidad no existe. Intenta de nuevo.");
+                }
             }
         }
 
@@ -315,6 +336,7 @@ public boolean crearEnunciado() {
     }
     return added;
 }
+
 
      @Override
     public void consultarEnunciadosPorUnidad() {
