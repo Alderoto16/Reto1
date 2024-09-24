@@ -1,6 +1,7 @@
 package Controller;
 
 import Models.Dificultad;
+import Models.Enunciado;
 import Utilidades.Util;
 import java.sql.*;
 import java.time.LocalDate;
@@ -386,7 +387,7 @@ private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
     // Comprobar que "nivel" existe en la consulta
     String nivelStr = resultSet.getString("nivel");
     if (nivelStr != null) {
-        Nivel nivelEnum = Nivel.valueOf(nivelStr.toUpperCase());
+        Dificultad nivelEnum = Dificultad.valueOf(nivelStr.toUpperCase());
         enunciadoResult.setNivel(nivelEnum);
     }
 
