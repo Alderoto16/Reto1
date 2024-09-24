@@ -2,6 +2,7 @@ package Models;
 
 import Models.Dificultad;
 
+
 public class Enunciado {
     private int id;
     private String descripcion;
@@ -18,6 +19,9 @@ public class Enunciado {
         this.ruta = ruta;
         this.convocatoriaExamen = convocatoriaExamen;
     }
+    
+    public Enunciado(){
+    };
 
     public int getId() {
         return id;
@@ -66,5 +70,23 @@ public class Enunciado {
     public void setConvocatoriaExamen(String convocatoriaExamen) {
         this.convocatoriaExamen = convocatoriaExamen;
     }
+
+    @Override
+    public String toString() {
+        System.out.println("Enunciado: ");
+        System.out.println("ID: "+id);
+        System.out.println("Descripción: "+descripcion);
+        System.out.println("Nivel: "+nivel);
+        System.out.println("Disponible: "+disponible);
+        System.out.println("Ruta: "+ruta);
+        System.out.println("Convocatoria examen: "+convocatoriaExamen);
+        
+        
+        
+        
+        return "";
+    }
+    
+    
 
 }
