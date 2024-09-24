@@ -15,7 +15,7 @@ public class Controller implements IController {
     // Queries
     final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
     final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, descripcion, fecha, curso, enunciadoID) VALUES (?, ?, ?, ?, ?)";
-    final String INSERTenunciado = "INSERT INTO Enunciado (id, descripcion, nivel, disponible, ruta, convocatoria_examen) VALUES (?, ?, ?, ?, ?, ?)";
+    final String INSERTenunciado = "INSERT INTO Enunciado (id, descripcion, nivel, disponible, ruta) VALUES (?, ?, ?, ?, ?)";
     final String GETconvocatorias = "SELECT * FROM ConvocatoriaExamen";
     final String GETunidades = "SELECT id FROM UnidadDidactica";
     final String INSERTunidad_id = "INSERT INTO UnidadDidactica_Enunciado (unidad_id, enunciado_id) VALUES (?, ?)";
@@ -103,7 +103,7 @@ public class Controller implements IController {
         }
     }
 
-    @Override
+ @Override
     public boolean crearUnidad() {
         boolean added = false;
         try {
@@ -142,8 +142,8 @@ public class Controller implements IController {
             e.printStackTrace();
         }
         return added;
-    }
-
+    } 
+    
     @Override
     public boolean crearConvocatoria() {
         boolean added = false;
@@ -202,81 +202,118 @@ public class Controller implements IController {
         }
     }
 
-    @Override
-    public boolean crearEnunciado() {
-        boolean added = false;
-        try {
-            connectionDB();
-            if (!comprobarUnidades() || !comprobarConvocatorias()) {
-                System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
-                return false;
-            }else{
-                mostrarConvocatorias();
-            }
+@Override
+public boolean crearEnunciado() {
+    boolean added = false;
+    try {
+        connectionDB();
 
-            int id;
-            while (true) {
-                System.out.println("Introduce el id: ");
-                id = Util.leerInt();
-                if (!isEnunciadoExists(id)) {
-                    break;
-                }
-                System.out.println("El ID del enunciado ya existe. Por favor, introduce un ID único.");
-            }
-
-            System.out.println("Introduce la descripcion: ");
-            String descripcion = Util.introducirCadena();
-            Dificultad nivel = Util.stringToEnum();
-            System.out.println("Introduce la disponibilidad: ");
-            boolean disponible = Util.leerBooleano();
-            System.out.println("Introduce la ruta: ");
-            String ruta = Util.introducirCadena();
-            mostrarConvocatorias();
-            String convocatoriaExamen;
-            while (true) {
-                System.out.println("Introduce la convocatoria del examen: ");
-                convocatoriaExamen = Util.introducirCadena();
-                if (isConvocatoriaExists(convocatoriaExamen)) {
-                    break;
-                }
-                System.out.println("La convocatoria no existe. Por favor, introduce una convocatoria válida.");
-            }
-
-            statement = connection.prepareStatement(INSERTenunciado);
-            statement.setInt(1, id);
-            statement.setString(2, descripcion);
-            statement.setString(3, nivel.name());
-            statement.setBoolean(4, disponible);
-            statement.setString(5, ruta);
-            statement.setString(6, convocatoriaExamen);
-            if (statement.executeUpdate() > 0) {
-                added = true;
-                System.out.println("Data inserted!");
-
-                // Link Enunciado with UnidadDidactica
-                System.out.println("Introduce el ID de la unidad con la que enlazar el enunciado:");
-                int unidadId = Util.leerInt();
-                if (isIDExists(CHECKIDUNIDAD, unidadId)) {
-                    PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
-                    insertUnidadIdStmt.setInt(1, unidadId);
-                    insertUnidadIdStmt.setInt(2, id); // Set enunciado_id
-                    if (insertUnidadIdStmt.executeUpdate() > 0) {
-                        System.out.println("Enunciado vinculado a la unidad!");
-                    } else {
-                        System.out.println("Failed to link Enunciado to UnidadDidactica!");
-                    }
-                } else {
-                    System.out.println("El ID de la unidad no existe.");
-                }
-            } else {
-                System.out.println("Failed to insert enunciado!");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
+        // Verificar si hay unidades o convocatorias disponibles
+        if (!comprobarUnidades() || !comprobarConvocatorias()) {
+            System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
+            return false;
         }
-        return added;
+
+        // Mostrar unidades didácticas
+        System.out.println("Unidades Didácticas disponibles:");
+        PreparedStatement mostrarUnidadesStmt = connection.prepareStatement(GETunidades);
+        ResultSet unidadesResultSet = mostrarUnidadesStmt.executeQuery();
+        while (unidadesResultSet.next()) {
+            int unidadId = unidadesResultSet.getInt("id");
+            System.out.println("ID: " + unidadId);
+        }
+
+        // Solicitar un ID único para el enunciado
+        int id;
+        while (true) {
+            System.out.println("Introduce el id del enunciado: ");
+            id = Util.leerInt();
+            if (!isEnunciadoExists(id)) {
+                break;
+            }
+            System.out.println("El ID del enunciado ya existe. Por favor, introduce un ID único.");
+        }
+
+        // Solicitar los datos del enunciado
+        System.out.println("Introduce la descripcion del enunciado: ");
+        String descripcion = Util.introducirCadena();
+
+        // Nivel de dificultad: 'ALTO', 'MEDIO', 'BAJO'
+        System.out.println("Introduce el nivel del enunciado (ALTO, MEDIO, BAJO): ");
+        String nivel = Util.introducirCadena().toUpperCase();
+        if (!nivel.equals("ALTO") && !nivel.equals("MEDIO") && !nivel.equals("BAJO")) {
+            System.out.println("Nivel inválido. Debe ser ALTO, MEDIO o BAJO.");
+            return false;
+        }
+
+        // Disponibilidad del enunciado (true/false)
+        System.out.println("¿Está disponible el enunciado? (true/false): ");
+        boolean disponible = Util.leerBooleano();
+
+        // Ruta del archivo o documento
+        System.out.println("Introduce la ruta del enunciado: ");
+        String ruta = Util.introducirCadena();
+
+        // Insertar el enunciado en la base de datos
+        statement = connection.prepareStatement(INSERTenunciado);
+        statement.setInt(1, id);
+        statement.setString(2, descripcion);
+        statement.setString(3, nivel); // Dificultad
+        statement.setBoolean(4, disponible);
+        statement.setString(5, ruta);
+        statement.executeUpdate();
+
+        System.out.println("Enunciado insertado correctamente!");
+
+        // Seleccionar convocatoria para asociar con el enunciado
+        mostrarConvocatorias(); // Mostrar las convocatorias de nuevo
+        String convocatoriaExamen;
+        while (true) {
+            System.out.println("Introduce la convocatoria del examen: ");
+            convocatoriaExamen = Util.introducirCadena();
+            if (isConvocatoriaExists(convocatoriaExamen)) {
+                break;
+            }
+            System.out.println("La convocatoria no existe. Por favor, introduce una convocatoria válida.");
+        }
+
+        // Actualizar la convocatoria con el ID del enunciado recién creado
+        PreparedStatement updateConvocatoriaStmt = connection.prepareStatement("UPDATE ConvocatoriaExamen SET enunciadoID = ? WHERE convocatoria = ?");
+        updateConvocatoriaStmt.setInt(1, id); // Usar el id del enunciado
+        updateConvocatoriaStmt.setString(2, convocatoriaExamen);
+        updateConvocatoriaStmt.executeUpdate();
+        System.out.println("Convocatoria actualizada correctamente con el enunciado.");
+
+        // Vincular el enunciado a una unidad didáctica
+        int unidadId;
+        while (true) {
+            System.out.println("Introduce el ID de la unidad con la que enlazar el enunciado:");
+            unidadId = Util.leerInt();
+            if (isIDExists(CHECKIDUNIDAD, unidadId)) {
+                // Si el ID es válido, insertar la relación
+                PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
+                insertUnidadIdStmt.setInt(1, unidadId);
+                insertUnidadIdStmt.setInt(2, id); // Set enunciado_id
+
+                if (insertUnidadIdStmt.executeUpdate() > 0) {
+                    System.out.println("Enunciado vinculado a la unidad correctamente!");
+                } else {
+                    System.out.println("Error al vincular el enunciado con la unidad didáctica.");
+                }
+                break; // Salir del bucle si el ID fue válido y se insertó correctamente
+            } else {
+                System.out.println("El ID de la unidad no existe. Intenta de nuevo.");
+            }
+        }
+
+        added = true;
+
+    } catch (SQLException e) {
+        System.out.println("Error de SQL");
+        e.printStackTrace();
     }
+    return added;
+}
 
      @Override
     public void consultarEnunciadosPorUnidad() {
