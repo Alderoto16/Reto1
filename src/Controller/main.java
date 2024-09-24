@@ -21,12 +21,15 @@ public class main {
                 case 1:
                     added = controller.crearUnidad();
                     System.out.println(added);
+                    added = controller.crearConvocatoria();
+                    System.out.println(added);
                     break;
                 case 2:
-                    added = controller.crearConvocatoria();
+                    added = controller.crearEnunciado();
+                    System.out.println(added);
+                    
                     break;
                 case 3:
-                    added = controller.crearEnunciado();
                     break;
                 case 4:
                     controller.consultarEnunciadosPorUnidad();
@@ -34,8 +37,7 @@ public class main {
                 case 5:
                     break;
                 case 6:
-                    break;
-                case 7:
+                    controller.asignarEnunciadoConvocatoria();
                     break;
                 case 0:
                     break;
@@ -44,14 +46,13 @@ public class main {
     }
 
     public static void showMenu() {
-        System.out.println("Crear una unidad didáctica (Unidad)");
-        System.out.println("Crear una Convocatoria de examen");
-        System.out.println("Crear un enunciado de examen agregando las unidades didácticas que va a referir. También\n"
+        System.out.println("1. Crear una unidad didáctica (Unidad) y crear una Convocatoria de examen");
+        System.out.println("2 .Crear un enunciado de examen agregando las unidades didácticas que va a referir. También\n"
                 + "se asociará a este enunciado la convocatoria para la que se crea.");
-        System.out.println("Consultar los enunciados de examen en los que se trata una unidad didáctica concreta.");
-        System.out.println("Consultar en que convocatorias se ha utilizado un enunciado concreto.");
-        System.out.println("Visualizar el documento de texto asociado a un enunciado");
-        System.out.println("Asignar un enunciado a una convocatoria.");
+        System.out.println("3. Consultar los enunciados de examen en los que se trata una unidad didáctica concreta.");
+        System.out.println("4. Consultar en que convocatorias se ha utilizado un enunciado concreto.");
+        System.out.println("5. Visualizar el documento de texto asociado a un enunciado");
+        System.out.println("6. Asignar un enunciado a una convocatoria.");
 
     }
    

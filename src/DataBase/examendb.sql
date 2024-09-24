@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS Enunciado (
     descripcion TEXT NOT NULL,
 	nivel ENUM('ALTO', 'MEDIO', 'BAJO'),
     disponible BOOLEAN DEFAULT TRUE,
-    ruta VARCHAR(255),
+    ruta VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS ConvocatoriaExamen (
@@ -27,10 +27,8 @@ CREATE TABLE IF NOT EXISTS ConvocatoriaExamen (
 );
 
 CREATE TABLE IF NOT EXISTS UnidadDidactica_Enunciado (
-    unidad_id INTEGER primary key,
+    unidad_id INTEGER,
     enunciado_id INTEGER,
     FOREIGN KEY (unidad_id) REFERENCES UnidadDidactica(id),
     FOREIGN KEY (enunciado_id) REFERENCES Enunciado(id)
 );
-
-
