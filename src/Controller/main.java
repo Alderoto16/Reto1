@@ -27,12 +27,11 @@ public class main {
                 case 2:
                     added = controller.crearEnunciado();
                     System.out.println(added);
-                    
                     break;
                 case 3:
+                    controller.consultarEnunciadosPorUnidad();
                     break;
                 case 4:
-                    controller.consultarEnunciadosPorUnidad();
                     break;
                 case 5:
                     break;
