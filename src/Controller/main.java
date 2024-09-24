@@ -37,6 +37,7 @@ public class main {
                 case 5:
                     break;
                 case 6:
+                    controller.asignarEnunciadoConvocatoria();
                     break;
                 case 0:
                     break;

@@ -32,4 +32,3 @@ CREATE TABLE IF NOT EXISTS UnidadDidactica_Enunciado (
     FOREIGN KEY (unidad_id) REFERENCES UnidadDidactica(id),
     FOREIGN KEY (enunciado_id) REFERENCES Enunciado(id)
 );
-

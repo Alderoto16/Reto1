@@ -32,8 +32,7 @@ public class Controller implements IController {
     "JOIN UnidadDidactica UD ON UDE.unidad_id = UD.id " +
     "LEFT JOIN ConvocatoriaExamen CE ON E.id = CE.enunciadoID " +
     "WHERE UD.acronimo = ?;";
-     
-     
+ 
     public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
         String user = "root";
@@ -193,8 +192,8 @@ public class Controller implements IController {
         }
         return added;
     }
-    
-     public void mostrarConvocatorias() {
+
+    public void mostrarConvocatorias() {
         try {
             connectionDB();
             System.out.println("Convocatorias disponibles:");
@@ -209,13 +208,11 @@ public class Controller implements IController {
             e.printStackTrace();
         }
     }
-
-@Override
-public boolean crearEnunciado() {
+   @Override
+    public boolean crearEnunciado() {
     boolean added = false;
     try {
         connectionDB();
-
         // Verificar si hay unidades o convocatorias disponibles
         if (!comprobarUnidades() || !comprobarConvocatorias()) {
             System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
@@ -342,7 +339,23 @@ public boolean crearEnunciado() {
     }
     return added;
 }
-
+private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
+    boolean exists = false;
+    String query = "SELECT COUNT(*) FROM UnidadDidactica_Enunciado WHERE unidad_id = ? AND enunciado_id = ?";
+    try {
+        PreparedStatement stmt = connection.prepareStatement(query);
+        stmt.setInt(1, unidadId);
+        stmt.setInt(2, enunciadoId);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next() && rs.getInt(1) > 0) {
+            exists = true;
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al verificar la relación UnidadDidactica-Enunciado.");
+        e.printStackTrace();
+    }
+    return exists;
+}
 
      @Override
      public void consultarEnunciadosPorUnidad() {
@@ -431,7 +444,81 @@ public boolean crearEnunciado() {
     }
 
     @Override
-    public void asignarEnunciadoConvocatoria() {
-        throw new UnsupportedOperationException("Not supported yet.");
+public void asignarEnunciadoConvocatoria() {
+    try {
+        connectionDB();
+        
+        // Paso 1: Obtener convocatorias con enunciado NULL
+        System.out.println("Convocatorias con enunciado NULL:");
+        PreparedStatement ps = connection.prepareStatement("SELECT convocatoria FROM ConvocatoriaExamen WHERE enunciadoID IS NULL");
+        ResultSet rs = ps.executeQuery();
+        
+        // Almacenar las convocatorias que tienen enunciado NULL
+        List<String> convocatoriasNull = new ArrayList<>();
+        while (rs.next()) {
+            String convocatoria = rs.getString("convocatoria");
+            convocatoriasNull.add(convocatoria);
+            System.out.println(convocatoria);
+        }
+
+        // Verificar si hay convocatorias disponibles
+        if (convocatoriasNull.isEmpty()) {
+            System.out.println("No hay convocatorias con enunciado NULL.");
+            return;
+        }
+
+        // Paso 2: Elegir una convocatoria
+        System.out.println("Selecciona una convocatoria de la lista anterior:");
+        String convocatoriaSeleccionada = Util.introducirCadena();
+        if (!convocatoriasNull.contains(convocatoriaSeleccionada)) {
+            System.out.println("Convocatoria no válida. Saliendo.");
+            return;
+        }
+
+        // Paso 3: Mostrar todos los enunciados disponibles
+        System.out.println("Enunciados disponibles:");
+        PreparedStatement psEnunciados = connection.prepareStatement("SELECT id, descripcion FROM Enunciado");
+        ResultSet rsEnunciados = psEnunciados.executeQuery();
+        
+        // Almacenar enunciados
+        List<Integer> enunciadosDisponibles = new ArrayList<>();
+        while (rsEnunciados.next()) {
+            int id = rsEnunciados.getInt("id");
+            String descripcion = rsEnunciados.getString("descripcion");
+            enunciadosDisponibles.add(id);
+            System.out.println("ID: " + id + ", Descripción: " + descripcion);
+        }
+
+        // Verificar si hay enunciados disponibles
+        if (enunciadosDisponibles.isEmpty()) {
+            System.out.println("No hay enunciados disponibles.");
+            return;
+        }
+
+        // Paso 4: Elegir un enunciado
+        System.out.println("Introduce el ID del enunciado que deseas asignar:");
+        int enunciadoSeleccionado = Util.leerInt();
+        if (!enunciadosDisponibles.contains(enunciadoSeleccionado)) {
+            System.out.println("Enunciado no válido. Saliendo.");
+            return;
+        }
+
+        // Actualizar la convocatoria seleccionada con el enunciado
+        PreparedStatement updateStmt = connection.prepareStatement("UPDATE ConvocatoriaExamen SET enunciadoID = ? WHERE convocatoria = ?");
+        updateStmt.setInt(1, enunciadoSeleccionado);
+        updateStmt.setString(2, convocatoriaSeleccionada);
+        
+        int rowsUpdated = updateStmt.executeUpdate();
+        if (rowsUpdated > 0) {
+            System.out.println("Enunciado asignado a la convocatoria correctamente.");
+        } else {
+            System.out.println("Error al asignar el enunciado a la convocatoria.");
+        }
+        
+    } catch (SQLException e) {
+        System.out.println("Error de SQL");
+        e.printStackTrace();
     }
+}
+
 }
