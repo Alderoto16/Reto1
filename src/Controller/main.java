@@ -1,7 +1,7 @@
 package Controller;
 
 import Utilidades.Util;
-
+import java.util.ArrayList;
 
 public class main {
 
@@ -15,26 +15,30 @@ public class main {
         boolean added;
         do {
             showMenu();
-            menu = Util.leerInt("¿Que desea hacer?", 0, 7);
+            menu = Util.leerInt("¿Que desea hacer?", 0, 6);
             switch (menu) {
 
                 case 1:
                     added = controller.crearUnidad();
                     System.out.println(added);
+                    added = controller.crearConvocatoria();
+                    System.out.println(added);
                     break;
                 case 2:
-                    added = controller.crearConvocatoria();
+                    added = controller.crearEnunciado();
+                    System.out.println(added);
                     break;
                 case 3:
-                    added = controller.crearEnunciado();
+                    controller.consultarEnunciadosPorUnidad();
                     break;
                 case 4:
                     break;
                 case 5:
+                    // show list of ids and let it choise one of them.
+                    visualizarDocEnunciado(controller);
                     break;
                 case 6:
-                    break;
-                case 7:
+                    controller.asignarEnunciadoConvocatoria();
                     break;
                 case 0:
                     break;
@@ -43,20 +47,27 @@ public class main {
     }
 
     public static void showMenu() {
-        System.out.println("1- Crear una unidad didáctica (Unidad)");
-        
-        System.out.println("2- Crear una Convocatoria de examen");
-        
-        System.out.println("3- Crear un enunciado de examen agregando las unidades didácticas que va a referir. También\n"
-                + "se asociará a este enunciado la convocatoria para la que se crea.");
-        
-        System.out.println("4- Consultar los enunciados de examen en los que se trata una unidad didáctica concreta.");
-        System.out.println("5- Consultar en que convocatorias se ha utilizado un enunciado concreto.");
-        System.out.println("6- Visualizar el documento de texto asociado a un enunciado");
-        
-        System.out.println("7- Asignar un enunciado a una convocatoria.");
-
+        System.out.println("1. Crear una unidad didáctica (Unidad) y crear una Convocatoria de examen");
+        System.out.println("2 .Crear un enunciado de examen agregando las unidades didácticas que va a referir. También\n"
+                        + "se asociará a este enunciado la convocatoria para la que se crea.");
+        System.out.println("3. Consultar los enunciados de examen en los que se trata una unidad didáctica concreta.");
+        System.out.println("4. Consultar en que convocatorias se ha utilizado un enunciado concreto.");
+        System.out.println("5. Visualizar el documento de texto asociado a un enunciado");
+        System.out.println("6. Asignar un enunciado a una convocatoria.");
     }
-   
 
+   public static void visualizarDocEnunciado(Controller controller) {
+        ArrayList<Integer> enunciadosIDList = controller.getEnunciadosIDList();
+      
+            System.out.println(" ID de enunciados en DB : " + enunciadosIDList );
+        
+        int enuID = Util.leerInt("Introduce la id del Enunciado: ");
+        if (enunciadosIDList.contains(enuID)) {
+            controller.visualizarTextoEnunciado(enuID);
+        } else {
+            System.out.println("ID NO exist");
+        }
+    }
+
+    
 }// end of main 

@@ -11,10 +11,8 @@ public interface IController {
      public boolean crearEnunciado();
      public void consultarEnunciadosPorUnidad ();
      public void consultarConvocatoriasConEnunciado();
-     public void visualizarTextoEnunciado();
-
-
-    public void  asignarEnunciadoConvocatoria(int enunciadoId, String convocatoriaId);
+     public void visualizarTextoEnunciado(int enuID);
+     public void asignarEnunciadoConvocatoria();
          
     
     
