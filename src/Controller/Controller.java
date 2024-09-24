@@ -25,7 +25,13 @@ public class Controller implements IController {
     final String CHECKIDCONVOCATORIA = "SELECT convocatoria FROM ConvocatoriaExamen WHERE convocatoria = ?";
     final String CHECKIDENUNCIADO = "SELECT id FROM Enunciado WHERE id = ?";
      final String GETenunciadoPorUnidad =  "SELECT e.id, e.descripcion, e.nivel, e.disponible, e.ruta, e.convocatoria_examen FROM Enunciado e WHERE e.id IN (SELECT enunciado_id FROM UnidadDidactica_Enunciado WHERE unidad_id = (SELECT id FROM UnidadDidactica where id=?))";
-    
+      final String RETURN_ENUNCIADOS_UNIDAD = 
+    "SELECT E.id, E.descripcion, E.nivel, E.disponible, E.ruta, CE.convocatoria " +
+    "FROM Enunciado E " +
+    "JOIN UnidadDidactica_Enunciado UDE ON E.id = UDE.enunciado_id " +
+    "JOIN UnidadDidactica UD ON UDE.unidad_id = UD.id " +
+    "LEFT JOIN ConvocatoriaExamen CE ON E.id = CE.enunciadoID " +
+    "WHERE UD.acronimo = ?;";
      
      
     public void connectionDB() {
@@ -339,44 +345,79 @@ public boolean crearEnunciado() {
 
 
      @Override
-    public void consultarEnunciadosPorUnidad() {
-		try {   
-                    connectionDB();
-                    System.out.println("Introduce el ID de la unidad:");
-                    int id = Util.leerInt();
-                          
-			statement = connection.prepareStatement(GETenunciadoPorUnidad);
-			statement.setInt(1, id);
-                        
-                          ResultSet rs = statement.executeQuery();
-                        
-                        while (rs.next()) {
-                int enunciadoId = rs.getInt("id");
-                String descripcion = rs.getString("descripcion");
-                String nivel = rs.getString("nivel");
-                boolean disponible = rs.getBoolean("disponible");
-                String ruta = rs.getString("ruta");
-                String convocatoriaExamen = rs.getString("convocatoria_examen");
+     public void consultarEnunciadosPorUnidad() {
+    connectionDB(); // Asume que tienes una función para conectar a la base de datos
+    ResultSet resultSet = null;
+    Enunciado enunciado = null;
+    ArrayList<Enunciado> enunciadosArray = new ArrayList<>();
+    String idBuscar;
+    
+    // Introducir acrónimo
+    System.out.println("Introduce el acronimo de la unidad: ");
+    idBuscar = Utilidades.Util.introducirCadena();
 
-                // Imprimimos los resultados
-                System.out.println("Enunciado ID: " + enunciadoId);
-                System.out.println("Descripción: " + descripcion);
-                System.out.println("Nivel: " + nivel);
-                System.out.println("Disponible: " + disponible);
-                System.out.println("Ruta: " + ruta);
-                System.out.println("Convocatoria Examen: " + convocatoriaExamen);
-                System.out.println("----------------------------------");
+    try {
+        // Preparamos la consulta SQL
+        statement = connection.prepareStatement(RETURN_ENUNCIADOS_UNIDAD);
+        statement.setString(1, idBuscar);
+
+        // Ejecutamos la consulta
+        resultSet = statement.executeQuery();
+
+        // Procesamos los resultados
+        while (resultSet.next()) {
+    Enunciado enunciadoResult = new Enunciado();
+    enunciadoResult.setId(resultSet.getInt("id"));
+    enunciadoResult.setDescripcion(resultSet.getString("descripcion"));
+
+    // Comprobar que "nivel" existe en la consulta
+    String nivelStr = resultSet.getString("nivel");
+    if (nivelStr != null) {
+        Nivel nivelEnum = Nivel.valueOf(nivelStr.toUpperCase());
+        enunciadoResult.setNivel(nivelEnum);
+    }
+
+    boolean disponible = resultSet.getBoolean("disponible");
+    enunciadoResult.setDisponible(disponible);
+    enunciadoResult.setRuta(resultSet.getString("ruta"));
+    enunciadoResult.setConvocatoriaExamen(resultSet.getString("convocatoria"));
+
+    enunciadosArray.add(enunciadoResult);
+}
+
+    } catch (SQLException e) {
+        System.out.println("Error de SQL");
+        e.printStackTrace();
+    } finally {
+        // Cerramos ResultSet
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException ex) {
+                System.out.println("Error en cierre del ResultSet");
             }
-                        
-			if (statement.executeUpdate() > 0) {
-				System.out.println("Data");
-			} else {
-				System.out.println("Failed!");
-			}
-		} catch (SQLException e) {
-			System.out.println("Error de SQL");
-			e.printStackTrace();
-		} 
+        }
+
+        // Cerramos PreparedStatement
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                System.out.println("Error en cierre del PreparedStatement");
+            }
+        }
+    }
+
+    // Mostrar los resultados obtenidos
+    if (!enunciadosArray.isEmpty()) {
+        for (Enunciado en : enunciadosArray) {
+            System.out.println("");
+            System.out.println(en.toString());
+        }
+    } else {
+        System.out.println("Ese enunciado de examen no existe");
+    }
+
     }
 
     @Override
