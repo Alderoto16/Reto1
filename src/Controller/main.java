@@ -56,7 +56,18 @@ public class main {
         System.out.println("6. Asignar un enunciado a una convocatoria.");
     }
 
-
+   public static void visualizarDocEnunciado(Controller controller) {
+        ArrayList<Integer> enunciadosIDList = controller.getEnunciadosIDList();
+      
+            System.out.println(" ID de enunciados en DB : " + enunciadosIDList );
+        
+        int enuID = Util.leerInt("Introduce la id del Enunciado: ");
+        if (enunciadosIDList.contains(enuID)) {
+            controller.visualizarTextoEnunciado(enuID);
+        } else {
+            System.out.println("ID NO exist");
+        }
+    }
 
     
 }// end of main 

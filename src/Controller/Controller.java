@@ -447,7 +447,6 @@ public class Controller implements IController {
 
     }
 
-
     @Override
     public void asignarEnunciadoConvocatoria() {
         try {
@@ -526,7 +525,11 @@ public class Controller implements IController {
         }
     }
 
-    
+    @Override
+    public void consultarConvocatoriasConEnunciado() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     //to get file from db
     public String getFilePathFromDatabase(int id) {
         String path = null;
@@ -545,9 +548,30 @@ public class Controller implements IController {
             closeConnection();
         }
         return path;
-    } 
-    
-      // ge list of enunciados id that exit in our DB
+    }
+    // Method to open a file using the Microsoft Office application
+
+    public static void openFile(String relativePath) {
+        File file = new File(relativePath);
+        if (file.exists()) {
+            System.out.println("Opening file: " + file.getAbsolutePath());
+            try {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    desktop.open(file);  // This will open the file with its default program (e.g., Microsoft Word)
+                } else {
+                    System.out.println("Desktop is not supported on this platform.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred while opening the file.");
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("File not found.");
+        }
+    }
+
+    // ge list of enunciados id that exit in our DB
     public ArrayList<Integer> getEnunciadosIDList() {
         ArrayList<Integer> enunciadosIDList = new ArrayList();
         try {
@@ -566,6 +590,13 @@ public class Controller implements IController {
         }
         return enunciadosIDList;
     }
+
+    @Override
+    public void visualizarTextoEnunciado(int enunciadoId) {
+        openFile(getFilePathFromDatabase(enunciadoId));
+    }
+
+    // open connection 
     private void openConnection() {
         try {
 
@@ -578,6 +609,7 @@ public class Controller implements IController {
         }
     }
 
+    // close connection 
     private void closeConnection() {
         try {
             if (statement != null) {
