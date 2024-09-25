@@ -8,15 +8,13 @@ public class UnidadDidactica {
     private String descripcion;
 
     public UnidadDidactica() {
-        this.id = 0;
         this.acronimo = "";
         this.titulo = "";
         this.evaluacion = "";
         this.descripcion = "";
     }
 
-    public UnidadDidactica(int id, String acronimo, String titulo, String evaluacion, String descripcion) {
-        this.id = id;
+    public UnidadDidactica(String acronimo, String titulo, String evaluacion, String descripcion) {
         this.acronimo = acronimo;
         this.titulo = titulo;
         this.evaluacion = evaluacion;

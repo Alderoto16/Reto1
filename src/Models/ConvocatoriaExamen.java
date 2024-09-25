@@ -18,13 +18,22 @@ public class ConvocatoriaExamen {
     private LocalDate fecha;
     private String curso;
 
-    public ConvocatoriaExamen(String convocatoria, String descripcion, LocalDate fecha, String curso) {
+     // Reference to the associated Enunciado
+    private int enunciadoID;
+    
+    public ConvocatoriaExamen(String convocatoria, String descripcion, LocalDate fecha, String curso,int enunciadoID) {
+        this.convocatoria = convocatoria;
+        this.descripcion = descripcion;
+        this.fecha = fecha;
+        this.curso = curso;
+        this.enunciadoID=enunciadoID;
+    }
+   public ConvocatoriaExamen(String convocatoria, String descripcion, LocalDate fecha, String curso) {
         this.convocatoria = convocatoria;
         this.descripcion = descripcion;
         this.fecha = fecha;
         this.curso = curso;
     }
-
     public String getConvocatoria() {
         return convocatoria;
     }

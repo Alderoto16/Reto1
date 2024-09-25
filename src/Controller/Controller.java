@@ -1,8 +1,11 @@
 package Controller;
 
+import Models.ConvocatoriaExamen;
 import Models.Dificultad;
 import Models.Enunciado;
+import Models.UnidadDidactica;
 import Utilidades.Util;
+import dao.DAO;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +16,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class Controller implements IController {
+
+    DAO dao = new DAO();
 
     private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid&useSSL=false";
     private static final String USERNAME = "root";
@@ -25,10 +30,6 @@ public class Controller implements IController {
     private CallableStatement callableStatement = null;
 
     // Queries
-    final String INSERTunidadDidactica = "INSERT INTO UnidadDidactica (id, acronimo, titulo, evaluacion, descripcion) VALUES (?, ?, ?, ?, ?)";
-    final String INSERTconvocatoria = "INSERT INTO ConvocatoriaExamen (convocatoria, descripcion, fecha, curso, enunciadoID) VALUES (?, ?, ?, ?, ?)";
-    final String INSERTenunciado = "INSERT INTO Enunciado (id, descripcion, nivel, disponible, ruta) VALUES (?, ?, ?, ?, ?)";
-    final String GETconvocatorias = "SELECT * FROM ConvocatoriaExamen";
     final String GETunidades = "SELECT id FROM UnidadDidactica";
     final String INSERTunidad_id = "INSERT INTO UnidadDidactica_Enunciado (unidad_id, enunciado_id) VALUES (?, ?)";
     final String CHECKIDUNIDAD = "SELECT id FROM UnidadDidactica WHERE id = ?";
@@ -44,23 +45,7 @@ public class Controller implements IController {
                     + "WHERE UD.acronimo = ?;";
 
     final String rutaEnunciado = "SELECT ruta FROM Enunciado WHERE id = ?";
-
-    public void connectionDB() {
-        String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
-        String user = "root";
-        String password = "abcd*1234";
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, password);
-            System.out.println("Conexión exitosa a la base de datos.");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Error: No se encontró el controlador JDBC.");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.out.println("Error al conectar a la base de datos.");
-            e.printStackTrace();
-        }
-    }
+    private static final String DOCS_DIR = "src/enunciados/";
 
     private boolean isIDExists(String query, int id) {
         try {
@@ -74,33 +59,9 @@ public class Controller implements IController {
         }
     }
 
-    private boolean isConvocatoriaExists(String convocatoria) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(CHECKIDCONVOCATORIA);
-            ps.setString(1, convocatoria);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true;
-        }
-    }
-
-    private boolean isEnunciadoExists(int id) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(CHECKIDENUNCIADO);
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true;
-        }
-    }
-
     private boolean comprobarUnidades() {
         try {
-            connectionDB();
+            // connectionDB();
             PreparedStatement ps = connection.prepareStatement(GETunidades);
             ResultSet rs = ps.executeQuery();
             return rs.next();
@@ -112,7 +73,7 @@ public class Controller implements IController {
 
     private boolean comprobarConvocatorias() {
         try {
-            connectionDB();
+            //connectionDB();
             statement = connection.prepareStatement(GETconvocatorias);
             resultSet = statement.executeQuery();
             return resultSet.next();
@@ -121,238 +82,6 @@ public class Controller implements IController {
             return false;
         }
     }
-
-    @Override
-    public boolean crearUnidad() {
-        boolean added = false;
-        try {
-            connectionDB();
-            int id;
-            while (true) {
-                System.out.println("Introduce el ID de la unidad:");
-                id = Util.leerInt();
-                if (!isIDExists(CHECKIDUNIDAD, id)) {
-                    break;
-                }
-                System.out.println("El ID de la unidad ya existe. Por favor, introduce un ID único.");
-            }
-            System.out.println("Introduce el acronimo de la unidad:");
-            String acronimo = Util.introducirCadena();
-            System.out.println("Introduce el titulo de la unidad:");
-            String titulo = Util.introducirCadena();
-            System.out.println("Introduce la evaluacion de la unidad:");
-            String evaluacion = Util.introducirCadena();
-            System.out.println("Introduce la descripcion de la unidad:");
-            String descripcion = Util.introducirCadena();
-            statement = connection.prepareStatement(INSERTunidadDidactica);
-            statement.setInt(1, id);
-            statement.setString(2, acronimo);
-            statement.setString(3, titulo);
-            statement.setString(4, evaluacion);
-            statement.setString(5, descripcion);
-            if (statement.executeUpdate() > 0) {
-                added = true;
-                System.out.println("Data inserted into UnidadDidactica!");
-            } else {
-                System.out.println("Failed to insert into UnidadDidactica!");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-        return added;
-    }
-
-    @Override
-    public boolean crearConvocatoria() {
-        boolean added = false;
-        try {
-            connectionDB();
-            String convocatoria;
-            while (true) {
-                System.out.println("Introduce el id de la convocatoria:");
-                convocatoria = Util.introducirCadena();
-                if (!isConvocatoriaExists(convocatoria)) {
-                    break;
-                }
-                System.out.println("La convocatoria ya existe. Por favor, introduce un ID único.");
-            }
-            System.out.println("Introduce el descripcion:");
-            String descripcion = Util.introducirCadena();
-            System.out.println("Introduce la fecha:");
-            LocalDate localDate = Util.leerFechaAMD();
-            Date fecha = Date.valueOf(localDate);
-            System.out.println("Introduce el curso:");
-            String curso = Util.introducirCadena();
-
-            statement = connection.prepareStatement(INSERTconvocatoria);
-            statement.setString(1, convocatoria);
-            statement.setString(2, descripcion);
-            statement.setDate(3, fecha);
-            statement.setString(4, curso);
-            statement.setNull(5, java.sql.Types.INTEGER);
-
-            if (statement.executeUpdate() > 0) {
-                added = true;
-                System.out.println("Data inserted!");
-            } else {
-                System.out.println("Failed!");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-        return added;
-    }
-
-    public void mostrarConvocatorias() {
-        try {
-            connectionDB();
-            System.out.println("Convocatorias disponibles:");
-            while (resultSet.next()) {
-                String convocatoria = resultSet.getString("convocatoria");
-                System.out.println(convocatoria);
-            }
-            statement = connection.prepareStatement(GETconvocatorias);
-            resultSet = statement.executeQuery();
-        } catch (SQLException e) {
-            System.out.println("Error al consultar las convocatorias.");
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public boolean crearEnunciado() {
-        boolean added = false;
-        try {
-            connectionDB();
-            // Verificar si hay unidades o convocatorias disponibles
-            if (!comprobarUnidades() || !comprobarConvocatorias()) {
-                System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
-                return false;
-            }
-
-            // Solicitar un ID único para el enunciado
-            int id;
-            while (true) {
-                System.out.println("Introduce el id del enunciado: ");
-                id = Util.leerInt();
-                if (!isEnunciadoExists(id)) {
-                    break;
-                }
-                System.out.println("El ID del enunciado ya existe. Por favor, introduce un ID único.");
-            }
-
-            // Solicitar los datos del enunciado
-            System.out.println("Introduce la descripcion del enunciado: ");
-            String descripcion = Util.introducirCadena();
-
-            // Nivel de dificultad: 'ALTO', 'MEDIO', 'BAJO'
-            System.out.println("Introduce el nivel del enunciado (ALTO, MEDIO, BAJO): ");
-            String nivel = Util.introducirCadena().toUpperCase();
-            if (!nivel.equals("ALTO") && !nivel.equals("MEDIO") && !nivel.equals("BAJO")) {
-                System.out.println("Nivel inválido. Debe ser ALTO, MEDIO o BAJO.");
-                return false;
-            }
-
-            // Disponibilidad del enunciado (true/false)
-            System.out.println("¿Está disponible el enunciado? (true/false): ");
-            boolean disponible = Util.leerBooleano();
-
-            // Ruta del archivo o documento
-            System.out.println("Introduce la ruta del enunciado: ");
-            String ruta = Util.introducirCadena();
-
-            // Insertar el enunciado en la base de datos
-            statement = connection.prepareStatement(INSERTenunciado);
-            statement.setInt(1, id);
-            statement.setString(2, descripcion);
-            statement.setString(3, nivel); // Dificultad
-            statement.setBoolean(4, disponible);
-            statement.setString(5, ruta);
-            statement.executeUpdate();
-
-            System.out.println("Enunciado insertado correctamente!");
-
-            // Seleccionar convocatoria para asociar con el enunciado
-            mostrarConvocatorias(); // Mostrar las convocatorias de nuevo
-            String convocatoriaExamen;
-            while (true) {
-                System.out.println("Introduce la convocatoria del examen: ");
-                convocatoriaExamen = Util.introducirCadena();
-                if (isConvocatoriaExists(convocatoriaExamen)) {
-                    break;
-                }
-                System.out.println("La convocatoria no existe. Por favor, introduce una convocatoria válida.");
-            }
-
-            // Actualizar la convocatoria con el ID del enunciado recién creado
-            PreparedStatement updateConvocatoriaStmt = connection.prepareStatement("UPDATE ConvocatoriaExamen SET enunciadoID = ? WHERE convocatoria = ?");
-            updateConvocatoriaStmt.setInt(1, id); // Usar el id del enunciado
-            updateConvocatoriaStmt.setString(2, convocatoriaExamen);
-            updateConvocatoriaStmt.executeUpdate();
-            System.out.println("Convocatoria actualizada correctamente con el enunciado.");
-
-            // Mostrar unidades didácticas
-            System.out.println("Unidades Didácticas disponibles:");
-            PreparedStatement mostrarUnidadesStmt = connection.prepareStatement(GETunidades);
-            ResultSet unidadesResultSet = mostrarUnidadesStmt.executeQuery();
-
-            List<Integer> unidadIds = new ArrayList<>();
-            int totalUnidades = 0;
-
-            while (unidadesResultSet.next()) {
-                int unidadId = unidadesResultSet.getInt("id");
-                System.out.println("ID: " + unidadId);
-                unidadIds.add(unidadId);
-                totalUnidades++;
-            }
-
-            // Preguntar cuántas unidades didácticas desea introducir
-            System.out.println("Cuántas unidades didácticas desea introducir (máximo " + totalUnidades + "): ");
-            int cantidadUnidades;
-            while (true) {
-                cantidadUnidades = Util.leerInt();
-                if (cantidadUnidades > 0 && cantidadUnidades <= totalUnidades) {
-                    break;
-                } else {
-                    System.out.println("Número inválido. Debe ser entre 1 y " + totalUnidades + ".");
-                }
-            }
-
-            // Vincular el enunciado a las unidades didácticas seleccionadas
-            for (int i = 0; i < cantidadUnidades; i++) {
-                int unidadId;
-                while (true) {
-                    System.out.println("Introduce el ID de la unidad " + (i + 1) + ":");
-                    unidadId = Util.leerInt();
-                    if (unidadIds.contains(unidadId)) {
-                        // Si el ID es válido, insertar la relación
-                        PreparedStatement insertUnidadIdStmt = connection.prepareStatement(INSERTunidad_id);
-                        insertUnidadIdStmt.setInt(1, unidadId);
-                        insertUnidadIdStmt.setInt(2, id); // Set enunciado_id
-
-                        if (insertUnidadIdStmt.executeUpdate() > 0) {
-                            System.out.println("Enunciado vinculado a la unidad correctamente!");
-                        } else {
-                            System.out.println("Error al vincular el enunciado con la unidad didáctica.");
-                        }
-                        break; // Salir del bucle si el ID fue válido y se insertó correctamente
-                    } else {
-                        System.out.println("El ID de la unidad no existe. Intenta de nuevo.");
-                    }
-                }
-            }
-
-            added = true;
-
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-        return added;
-    }
-
     private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
         boolean exists = false;
         String query = "SELECT COUNT(*) FROM UnidadDidactica_Enunciado WHERE unidad_id = ? AND enunciado_id = ?";
@@ -450,7 +179,7 @@ public class Controller implements IController {
     @Override
     public void asignarEnunciadoConvocatoria() {
         try {
-            connectionDB();
+           // connectionDB();
 
             // Paso 1: Obtener convocatorias con enunciado NULL
             System.out.println("Convocatorias con enunciado NULL:");
@@ -525,31 +254,93 @@ public class Controller implements IController {
         }
     }
 
-    @Override
-    public void consultarConvocatoriasConEnunciado() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    
+    
+    
+    
+    
+    //in TOP should be completed 
+    
+    
+    
+    
+    
+    // this func should go to DAO too 
+    public boolean isConvocatoriaExists(String convocatoria) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(CHECKIDCONVOCATORIA);
+            ps.setString(1, convocatoria);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
     }
 
-    //to get file from db
-    public String getFilePathFromDatabase(int id) {
-        String path = null;
-        try {
-            String sql = "SELECT ruta FROM Enunciado WHERE id = ?";
-            this.openConnection();
-            statement = connection.prepareStatement(sql);
-            statement.setInt(1, id);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                path = rs.getString("ruta");
-            }
-        } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
-        } finally {
-            closeConnection();
-        }
-        return path;
+    @Override
+    public boolean crearConvocatoria(ConvocatoriaExamen convExamen) {
+        return dao.crearConvocatoria(convExamen);
     }
-    // Method to open a file using the Microsoft Office application
+
+    @Override
+    public boolean crearUnidad(UnidadDidactica uniDi) {
+        return dao.crearUnidad(uniDi);
+    }
+
+    public void mostrarConvocatorias() {
+        dao.mostrarConvocatorias();
+    }
+
+    @Override
+    public void consultarConvocatoriasConEnunciado() {
+
+    }
+
+    @Override
+    public boolean crearEnunciado(Enunciado enu) {
+        return dao.crearEnunciado(enu);
+    }
+
+    public ArrayList<Integer> getEnunciadosIDList() {
+        return dao.getEnunciadosIDList();
+    }
+
+    @Override
+    public void visualizarTextoEnunciado(int enunciadoId) {
+        String filePath = dao.getFilePathFromDatabase(enunciadoId);
+        openFile(filePath);
+    }
+
+    public void createEnunciadosFolder() {
+        File docsDir = new File(DOCS_DIR);
+        if (!docsDir.exists()) {
+            docsDir.mkdirs();  // Create the directory if it doesn't exist
+        }
+    }
+
+    // create file of enunciado
+    public String createFile(String docName) {
+        // Ensure "docs" folder exists
+        createEnunciadosFolder();
+        // Define the relative path of the file inside "docs"
+        String relativePath = DOCS_DIR + docName + ".docx";
+        File file = new File(relativePath);
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+                //saveFilePathToDatabase(relativePath);
+                return relativePath;
+            } else {
+                System.out.println("File already exists.");
+                return relativePath;
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while creating the file.");
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static void openFile(String relativePath) {
         File file = new File(relativePath);
@@ -571,33 +362,38 @@ public class Controller implements IController {
         }
     }
 
-    // ge list of enunciados id that exit in our DB
-    public ArrayList<Integer> getEnunciadosIDList() {
-        ArrayList<Integer> enunciadosIDList = new ArrayList();
+    /*
+    public void connectionDB() {
+        String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
+        String user = "root";
+        String password = "abcd*1234";
         try {
-            String sql = "SELECT id FROM Enunciado";
-            this.openConnection();
-            statement = connection.prepareStatement(sql);
-            resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                enunciadosIDList.add(id);
-            }
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(url, user, password);
+            System.out.println("Conexión exitosa a la base de datos.");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Error: No se encontró el controlador JDBC.");
+            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Error al conectar a la base de datos.");
+            e.printStackTrace();
+        }
+    }
+     */
+ /*
+    private boolean isEnunciadoExists(int id) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(CHECKIDENUNCIADO);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
+            return true;
         }
-        return enunciadosIDList;
-    }
-
-    @Override
-    public void visualizarTextoEnunciado(int enunciadoId) {
-        openFile(getFilePathFromDatabase(enunciadoId));
-    }
-
+    }*/
     // open connection 
-    private void openConnection() {
+    /*private void openConnection() {
         try {
 
             connection = DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
@@ -623,6 +419,46 @@ public class Controller implements IController {
             Logger.getLogger("this").info(e.getLocalizedMessage());
 
         }
-    }
-
+    }*/
+    // create package or directory if does not existe 
+    //to get file from db
+    /*
+    public String getFilePathFromDatabase(int id) {
+        String path = null;
+        try {
+            String sql = "SELECT ruta FROM Enunciado WHERE id = ?";
+            this.openConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                path = rs.getString("ruta");
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        } finally {
+            closeConnection();
+        }
+        return path;
+    }*/
+    // Method to open a file using the Microsoft Office application
+    // ge list of enunciados id that exit in our DB
+    /*public ArrayList<Integer> getEnunciadosIDList() {
+        ArrayList<Integer> enunciadosIDList = new ArrayList();
+        try {
+            String sql = "SELECT id FROM Enunciado";
+            this.openConnection();
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                enunciadosIDList.add(id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        return enunciadosIDList;
+    }*/
 }// class

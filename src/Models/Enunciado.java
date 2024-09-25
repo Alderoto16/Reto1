@@ -3,25 +3,31 @@ package Models;
 import Models.Dificultad;
 
 public class Enunciado {
+
     private int id;
     private String descripcion;
     private Dificultad nivel;
     private boolean disponible;
     private String ruta;
-    private String convocatoriaExamen;
+   // private String convocatoriaExamen;
 
-    public Enunciado(int id, String descripcion, Dificultad dificultad, boolean disponible, String ruta, String convocatoriaExamen) {
+    public Enunciado(int id, String descripcion, Dificultad dificultad, boolean disponible, String ruta) {
         this.id = id;
         this.descripcion = descripcion;
         this.nivel = dificultad;
         this.disponible = disponible;
         this.ruta = ruta;
-        this.convocatoriaExamen = convocatoriaExamen;
+       // this.convocatoriaExamen = convocatoriaExamen;
     }
 
-    public Enunciado() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Enunciado(String descripcion, Dificultad dificultad, boolean disponible, String ruta) {
+        this.descripcion = descripcion;
+        this.nivel = dificultad;
+        this.disponible = disponible;
+        this.ruta = ruta;
+        //this.convocatoriaExamen = convocatoriaExamen;
     }
+
 
     public int getId() {
         return id;
@@ -62,7 +68,7 @@ public class Enunciado {
     public void setRuta(String ruta) {
         this.ruta = ruta;
     }
-
+/*
     public String getConvocatoriaExamen() {
         return convocatoriaExamen;
     }
@@ -70,5 +76,5 @@ public class Enunciado {
     public void setConvocatoriaExamen(String convocatoriaExamen) {
         this.convocatoriaExamen = convocatoriaExamen;
     }
-
+*/
 }

@@ -1,12 +1,20 @@
-package Controller;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package dao;
 
 import Models.ConvocatoriaExamen;
-import Models.Dificultad;
 import Models.Enunciado;
 import Models.UnidadDidactica;
-import java.sql.Date;
+import java.util.ArrayList;
 
-public interface IController {
+/**
+ *
+ * @author Omar
+ */
+public interface IDao {
 
     public boolean crearUnidad(UnidadDidactica uniDi);
 
@@ -18,7 +26,9 @@ public interface IController {
 
     public void consultarConvocatoriasConEnunciado();
 
-    public void visualizarTextoEnunciado(int enuID);
+    public ArrayList<Integer> getEnunciadosIDList();
+
+    public String getFilePathFromDatabase(int id);
 
     public void asignarEnunciadoConvocatoria();
 
