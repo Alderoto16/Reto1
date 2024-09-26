@@ -1,11 +1,11 @@
-package Controller;
+package app;
 
+import Controller.Controller;
 import Models.ConvocatoriaExamen;
 import Models.Dificultad;
 import Models.Enunciado;
 import Models.UnidadDidactica;
 import Utilidades.Util;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -31,21 +31,19 @@ public class main {
                     break;
                 case 3:
                     controller.crearEnunciado(solicitarDatosEnunciado(controller));
-                    //other menu to 
-                    //controller.asignarEnunciadoConvocatoria(); ???
-
                     break;
                 case 4:
-                    controller.consultarEnunciadosPorUnidad();
+                    consultarEnunciadosPorUnidad(controller);
                     break;
                 case 5:
-                    // consultar convoca
-                 
+                    // consultar convocatorias
                     break;
                 case 6:
                     visualizarDocEnunciado(controller);
                     break;
-                    
+                case 7:
+                   controller.asignarEnunciadoConvocatoria();
+                    break;
                 case 0:
                     break;
             }
@@ -60,6 +58,8 @@ public class main {
         System.out.println("4. Consultar en que convocatorias se ha utilizado un enunciado concreto.");
         System.out.println("5. Visualizar el documento de texto asociado a un enunciado");
         System.out.println("6. Asignar un enunciado a una convocatoria.");
+        System.out.println("7. ...");
+        System.out.println("8. ...");
     }
 
     public static UnidadDidactica solicitarDatosUnidad() {
@@ -76,9 +76,25 @@ public class main {
 
     }
 
-    
-    public static Enunciado solicitarDatosEnunciado(Controller controller) {
+    public static void consultarEnunciadosPorUnidad(Controller controller) {
+        String unidAcronim;
+        ArrayList<Enunciado> enunciadosLista = new ArrayList();
+        unidAcronim = Utilidades.Util.introducirCadena("Introduce el acronimo de la unidad: ");
+        enunciadosLista = controller.consultarEnunciadosPorUnidad(unidAcronim);
 
+        if (!enunciadosLista.isEmpty()) {
+            for (Enunciado enunciado : enunciadosLista) {
+                System.out.println("");
+                System.out.println(enunciado);
+            }
+        } else {
+            System.out.println("Ese enunciado de examen no existe");
+        }
+    }
+
+  
+
+    public static Enunciado solicitarDatosEnunciado(Controller controller) {
         String descripcion = Util.introducirCadena("Introduce la descripcion del enunciado: ");
         Dificultad nivel = Util.stringToEnum();
         System.out.println("¿Está disponible el enunciado? (true/false): ");
@@ -88,26 +104,27 @@ public class main {
 
         return new Enunciado(descripcion, nivel, disponible, ruta);
     }
-    public static ConvocatoriaExamen solicitarDatosConvocatorias(Controller controller){
-             String convocatoria;
-            while (true) {
-                System.out.println("Introduce el id de la convocatoria:");
-                convocatoria = Util.introducirCadena();
-                if (!controller.isConvocatoriaExists(convocatoria)) {
-                    break;
-                }
-                System.out.println("La convocatoria ya existe. Por favor, introduce un ID único.");
-            }
 
-            String descripcion = Util.introducirCadena("Introduce el descripcion:");
-            System.out.println("Introduce la fecha:");
-            LocalDate localDate = Util.leerFechaAMD();
-           // Date fecha = Date.valueOf(localDate);
-            String curso = Util.introducirCadena("Introduce el curso:");
-          //  int enunciadoID = Util.leerInt("Introduce el id del enunciado:");
-            return new ConvocatoriaExamen(convocatoria,descripcion,localDate,curso);
+    public static ConvocatoriaExamen solicitarDatosConvocatorias(Controller controller) {
+        String convocatoria;
+        while (true) {
+            System.out.println("Introduce el id de la convocatoria:");
+            convocatoria = Util.introducirCadena();
+            if (!controller.isConvocatoriaExists(convocatoria)) {
+                break;
+            }
+            System.out.println("La convocatoria ya existe. Por favor, introduce un ID único.");
+        }
+
+        String descripcion = Util.introducirCadena("Introduce el descripcion:");
+        System.out.println("Introduce la fecha:");
+        LocalDate localDate = Util.leerFechaAMD();
+        // Date fecha = Date.valueOf(localDate);
+        String curso = Util.introducirCadena("Introduce el curso:");
+        //  int enunciadoID = Util.leerInt("Introduce el id del enunciado:");
+        return new ConvocatoriaExamen(convocatoria, descripcion, localDate, curso);
     }
-    
+
     public static void visualizarDocEnunciado(Controller controller) {
         ArrayList<Integer> enunciadosIDList = controller.getEnunciadosIDList();
         System.out.println(" ID de enunciados en DB : " + enunciadosIDList);
@@ -119,5 +136,7 @@ public class main {
             System.out.println("ID NO exist");
         }
     }
+    
+    
 
 }// end of main 

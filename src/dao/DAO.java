@@ -7,6 +7,7 @@ package dao;
 
 import Controller.IController;
 import Models.ConvocatoriaExamen;
+import Models.Dificultad;
 import Models.Enunciado;
 import Models.UnidadDidactica;
 import Utilidades.DBConnection;
@@ -27,11 +28,8 @@ import java.util.logging.Logger;
 public class DAO implements IDao {
 
     private Connection connection = null;
-    ;
     private PreparedStatement statement = null;
-    ;
     private ResultSet resultSet = null;
-    ;
 
     // all queries here 
     final String INSERTENUNCIADO = "INSERT INTO Enunciado (descripcion, nivel, disponible, ruta) VALUES ( ?, ?, ?, ?)";
@@ -40,13 +38,20 @@ public class DAO implements IDao {
 
     private final String GETFILEPATH = "SELECT ruta FROM Enunciado WHERE id = ?";
     private final String GETAllENUNCIADOSIDS = "SELECT id FROM Enunciado";
-    final String GETconvocatorias = "SELECT * FROM ConvocatoriaExamen";
+    private final String GETconvocatorias = "SELECT * FROM ConvocatoriaExamen";
+    private final String RETURN_ENUNCIADOS_UNIDAD
+                    = "SELECT E.id, E.descripcion, E.nivel, E.disponible, E.ruta, CE.convocatoria "
+                    + "FROM Enunciado E "
+                    + "JOIN UnidadDidactica_Enunciado UDE ON E.id = UDE.enunciado_id "
+                    + "JOIN UnidadDidactica UD ON UDE.unidad_id = UD.id "
+                    + "LEFT JOIN ConvocatoriaExamen CE ON E.id = CE.enunciadoID "
+                    + "WHERE UD.acronimo = ?;";
 
     @Override
     public boolean crearConvocatoria(ConvocatoriaExamen convExamen) {
         boolean added = false;
         try {
-         
+
             connection = DBConnection.getInstance().getConnection();
             statement = connection.prepareStatement(INSERTconvocatoria);
             statement.setString(1, convExamen.getConvocatoria());
@@ -126,9 +131,6 @@ public class DAO implements IDao {
         }
     }
 
-  
-   
-
     @Override
     public boolean crearEnunciado(Enunciado enu
     ) {
@@ -159,8 +161,46 @@ public class DAO implements IDao {
     }
 
     @Override
-    public void consultarEnunciadosPorUnidad() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ArrayList<Enunciado> consultarEnunciadosPorUnidad(String unidAcronim) {
+        ArrayList<Enunciado> enunciadosArray = new ArrayList<>();
+        try {
+            // Preparamos la consulta SQL
+            connection = DBConnection.getInstance().getConnection();
+            statement = connection.prepareStatement(RETURN_ENUNCIADOS_UNIDAD);
+            statement.setString(1, unidAcronim);
+
+            // Ejecutamos la consulta
+            resultSet = statement.executeQuery();
+
+            // Procesamos los resultados
+            while (resultSet.next()) {
+                Enunciado enunciadoResult = new Enunciado();
+                enunciadoResult.setId(resultSet.getInt("id"));
+                enunciadoResult.setDescripcion(resultSet.getString("descripcion"));
+                // Comprobar que "nivel" existe en la consulta
+                String nivelStr = resultSet.getString("nivel");
+                if (nivelStr != null) {
+                    Dificultad nivelEnum = Dificultad.valueOf(nivelStr.toUpperCase());
+                    enunciadoResult.setNivel(nivelEnum);
+                }
+                boolean disponible = resultSet.getBoolean("disponible");
+                enunciadoResult.setDisponible(disponible);
+                enunciadoResult.setRuta(resultSet.getString("ruta"));
+
+                enunciadosArray.add(enunciadoResult);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error de SQL");
+            e.printStackTrace();
+        } finally {
+            try {
+                DBConnection.getInstance().closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(DAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return enunciadosArray;
+
     }
 
     @Override

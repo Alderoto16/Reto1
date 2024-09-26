@@ -5,6 +5,7 @@ import Models.Dificultad;
 import Models.Enunciado;
 import Models.UnidadDidactica;
 import java.sql.Date;
+import java.util.ArrayList;
 
 public interface IController {
 
@@ -14,7 +15,7 @@ public interface IController {
 
     public boolean crearEnunciado(Enunciado enu);
 
-    public void consultarEnunciadosPorUnidad();
+    public ArrayList<Enunciado> consultarEnunciadosPorUnidad(String str);
 
     public void consultarConvocatoriasConEnunciado();
 

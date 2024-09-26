@@ -22,7 +22,7 @@ public interface IDao {
 
     public boolean crearEnunciado(Enunciado enu);
 
-    public void consultarEnunciadosPorUnidad();
+    public ArrayList<Enunciado> consultarEnunciadosPorUnidad(String unidAcronim);
 
     public void consultarConvocatoriasConEnunciado();
 
