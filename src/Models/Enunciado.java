@@ -61,4 +61,9 @@ public class Enunciado {
         this.ruta = ruta;
     }
 
+    @Override
+    public String toString() {
+        return "Enunciado{" + "id=" + id + ", descripcion=" + descripcion + ", nivel=" + nivel + ", disponible=" + disponible + ", ruta=" + ruta + '}';
+    }
+
 }

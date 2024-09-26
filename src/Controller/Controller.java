@@ -37,6 +37,7 @@ public class Controller implements IController {
     "JOIN UnidadDidactica UD ON UDE.unidad_id = UD.id " +
     "LEFT JOIN ConvocatoriaExamen CE ON E.id = CE.enunciadoID " +
     "WHERE UD.acronimo = ?;";
+       final String GET_ACRONIMO_UNIDAD =  "SELECT acronimo from UnidadDidactica";
  
     public void connectionDB() {
         String url = "jdbc:mysql://localhost:3306/examendb?serverTimezone=Europe/Madrid";
@@ -368,8 +369,62 @@ private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
     ResultSet resultSet = null;
     Enunciado enunciado = null;
     ArrayList<Enunciado> enunciadosArray = new ArrayList<>();
+    //ArrayList<UnidadDidactica> unidadesArray = new ArrayList<>();
     String idBuscar;
-    
+    /*
+        try {
+        // Preparamos la consulta SQL
+        statement = connection.prepareStatement(RETURN_ENUNCIADOS_UNIDAD);
+ 
+
+        // Ejecutamos la consulta
+        resultSet = statement.executeQuery();
+
+        // Procesamos los resultados
+        while (resultSet.next()) {
+    Enunciado enunciadoResult = new Enunciado();
+    enunciadoResult.setId(resultSet.getInt("id"));
+    enunciadoResult.setDescripcion(resultSet.getString("descripcion"));
+
+    // Comprobar que "nivel" existe en la consulta
+    String nivelStr = resultSet.getString("nivel");
+    if (nivelStr != null) {
+        Dificultad nivelEnum = Dificultad.valueOf(nivelStr.toUpperCase());
+        enunciadoResult.setNivel(nivelEnum);
+    }
+
+    boolean disponible = resultSet.getBoolean("disponible");
+    enunciadoResult.setDisponible(disponible);
+    enunciadoResult.setRuta(resultSet.getString("ruta"));
+ 
+
+    enunciadosArray.add(enunciadoResult);
+}
+
+    } catch (SQLException e) {
+        System.out.println("Error de SQL");
+        e.printStackTrace();
+    } finally {
+        // Cerramos ResultSet
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (SQLException ex) {
+                System.out.println("Error en cierre del ResultSet");
+            }
+        }
+
+        // Cerramos PreparedStatement
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                System.out.println("Error en cierre del PreparedStatement");
+            }
+        }
+    }
+
+    */
     // Introducir acrónimo
     System.out.println("Introduce el acronimo de la unidad: ");
     idBuscar = Utilidades.Util.introducirCadena();
