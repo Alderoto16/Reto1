@@ -364,4 +364,8 @@ public class Util {
         }
     }
 
+    public static int leerInt(String introduce_la_id_del_Enunciado_) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

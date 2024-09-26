@@ -57,8 +57,7 @@ public class main {
         System.out.println("6. Asignar un enunciado a una convocatoria.");
 
     }
-   
-    public static void visualizarDocEnunciado(Controller controller) {
+ public static void visualizarDocEnunciado(Controller controller) {
         ArrayList<Integer> enunciadosIDList = controller.getEnunciadosIDList();
       
             System.out.println(" ID de enunciados en DB : " + enunciadosIDList );
