@@ -33,6 +33,7 @@ public class main {
                     controller.consultarEnunciadosPorUnidad();
                     break;
                 case 4:
+                    controller.consultarConvocatoriasConEnunciado();
                     break;
                 case 5:
                         // show list of ids and let it choise one of them.
@@ -62,13 +63,15 @@ public class main {
         ArrayList<Integer> enunciadosIDList = controller.getEnunciadosIDList();
       
             System.out.println(" ID de enunciados en DB : " + enunciadosIDList );
-        
-        int enuID = Util.leerInt("Introduce la id del Enunciado: ");
+        System.out.println("Introduce la id del Enunciado: ");
+        int enuID = Util.leerInt();
         if (enunciadosIDList.contains(enuID)) {
             controller.visualizarTextoEnunciado(enuID);
         } else {
             System.out.println("ID NO exist");
         }
     }
+
+   
 
 }// end of main 

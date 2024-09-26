@@ -438,10 +438,46 @@ private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
 
     }
 
-    @Override
-    public void consultarConvocatoriasConEnunciado() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+   @Override
+public void consultarConvocatoriasConEnunciado() {
+    try {
+        connectionDB();
+        
+        // Prompt the user for the enunciado ID
+        System.out.println("Introduce el ID del enunciado que deseas consultar: ");
+        int enunciadoId = Util.leerInt();
+
+        // Prepare the SQL query to find convocatorias with the specified enunciado ID
+        String query = "SELECT * FROM ConvocatoriaExamen WHERE enunciadoID = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, enunciadoId);
+        
+        ResultSet rs = ps.executeQuery();
+        
+        // Check if any convocatorias were found
+        if (!rs.isBeforeFirst()) {
+            System.out.println("No se encontraron convocatorias para el enunciado con ID: " + enunciadoId);
+        } else {
+            System.out.println("Convocatorias asociadas con el enunciado ID " + enunciadoId + ":");
+            while (rs.next()) {
+                // Retrieve and display relevant fields from the ConvocatoriaExamen table
+                String convocatoria = rs.getString("convocatoria");
+                String descripcion = rs.getString("descripcion");
+                Date fecha = rs.getDate("fecha");
+                String curso = rs.getString("curso");
+
+                System.out.println("Convocatoria: " + convocatoria + 
+                                   ", Descripción: " + descripcion + 
+                                   ", Fecha: " + fecha + 
+                                   ", Curso: " + curso);
+            }
+        }
+    } catch (SQLException e) {
+        System.out.println("Error de SQL");
+        e.printStackTrace();
+    } 
+}
+
 
 
     @Override
@@ -536,9 +572,7 @@ public void asignarEnunciadoConvocatoria() {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            closeConnection();
-        }
+        } 
         return enunciadosIDList;
     }
 
@@ -547,21 +581,7 @@ public void asignarEnunciadoConvocatoria() {
         openFile(getFilePathFromDatabase(enunciadoId));
     }
     
-     // close connection 
-    private void closeConnection() {
-        try {
-            if (statement != null) {
-                statement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
-            Logger.getLogger("this").info("Connection closed");
-        } catch (SQLException e) {
-            Logger.getLogger("this").info(e.getLocalizedMessage());
 
-        }
-    }
         public static void openFile(String relativePath) {
         File file = new File(relativePath);
         if (file.exists()) {
@@ -596,8 +616,6 @@ public void asignarEnunciadoConvocatoria() {
             }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
-        } finally {
-            closeConnection();
         }
         return path;
     }
