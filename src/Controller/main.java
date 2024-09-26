@@ -15,7 +15,7 @@ public class main {
         boolean added;
         do {
             showMenu();
-            menu = Util.leerInt("¿Que desea hacer?", 0, 7);
+            menu = Util.leerInt("¿Que desea hacer?", 0, 6);
             switch (menu) {
 
                 case 1:
