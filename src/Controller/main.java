@@ -1,6 +1,7 @@
 package Controller;
 
 import Utilidades.Util;
+import java.util.ArrayList;
 
 
 public class main {
@@ -34,6 +35,8 @@ public class main {
                 case 4:
                     break;
                 case 5:
+                        // show list of ids and let it choise one of them.
+                    visualizarDocEnunciado(controller);
                     break;
                 case 6:
                     controller.asignarEnunciadoConvocatoria();
@@ -55,5 +58,17 @@ public class main {
 
     }
    
+    public static void visualizarDocEnunciado(Controller controller) {
+        ArrayList<Integer> enunciadosIDList = controller.getEnunciadosIDList();
+      
+            System.out.println(" ID de enunciados en DB : " + enunciadosIDList );
+        
+        int enuID = Util.leerInt("Introduce la id del Enunciado: ");
+        if (enunciadosIDList.contains(enuID)) {
+            controller.visualizarTextoEnunciado(enuID);
+        } else {
+            System.out.println("ID NO exist");
+        }
+    }
 
 }// end of main 

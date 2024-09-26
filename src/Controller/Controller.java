@@ -3,10 +3,14 @@ package Controller;
 import Models.Dificultad;
 import Models.Enunciado;
 import Utilidades.Util;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Controller implements IController {
 
@@ -439,10 +443,6 @@ private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void visualizarTextoEnunciado() {
-       
-    }
 
     @Override
 public void asignarEnunciadoConvocatoria() {
@@ -520,6 +520,85 @@ public void asignarEnunciadoConvocatoria() {
         System.out.println("Error de SQL");
         e.printStackTrace();
     }
+    
+    
 }
+    public ArrayList<Integer> getEnunciadosIDList() {
+        ArrayList<Integer> enunciadosIDList = new ArrayList();
+        try {
+            String sql = "SELECT id FROM Enunciado";
+            connectionDB();
+            statement = connection.prepareStatement(sql);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                enunciadosIDList.add(id);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection();
+        }
+        return enunciadosIDList;
+    }
 
+    @Override
+    public void visualizarTextoEnunciado(int enunciadoId) {
+        openFile(getFilePathFromDatabase(enunciadoId));
+    }
+    
+     // close connection 
+    private void closeConnection() {
+        try {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+            Logger.getLogger("this").info("Connection closed");
+        } catch (SQLException e) {
+            Logger.getLogger("this").info(e.getLocalizedMessage());
+
+        }
+    }
+        public static void openFile(String relativePath) {
+        File file = new File(relativePath);
+        if (file.exists()) {
+            System.out.println("Opening file: " + file.getAbsolutePath());
+            try {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    desktop.open(file);  // This will open the file with its default program (e.g., Microsoft Word)
+                } else {
+                    System.out.println("Desktop is not supported on this platform.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred while opening the file.");
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("File not found.");
+        }
+    }
+    
+      //to get file from db
+    public String getFilePathFromDatabase(int id) {
+        String path = null;
+        try {
+            String sql = "SELECT ruta FROM Enunciado WHERE id = ?";
+            connectionDB();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                path = rs.getString("ruta");
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+        } finally {
+            closeConnection();
+        }
+        return path;
+    }
 }
