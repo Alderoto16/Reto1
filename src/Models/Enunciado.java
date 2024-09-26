@@ -8,7 +8,6 @@ public class Enunciado {
     private Dificultad nivel;
     private boolean disponible;
     private String ruta;
-    private String convocatoriaExamen;
 
     public Enunciado(int id, String descripcion, Dificultad dificultad, boolean disponible, String ruta, String convocatoriaExamen) {
         this.id = id;
@@ -16,7 +15,6 @@ public class Enunciado {
         this.nivel = dificultad;
         this.disponible = disponible;
         this.ruta = ruta;
-        this.convocatoriaExamen = convocatoriaExamen;
     }
 
     public Enunciado() {
@@ -61,14 +59,6 @@ public class Enunciado {
 
     public void setRuta(String ruta) {
         this.ruta = ruta;
-    }
-
-    public String getConvocatoriaExamen() {
-        return convocatoriaExamen;
-    }
-
-    public void setConvocatoriaExamen(String convocatoriaExamen) {
-        this.convocatoriaExamen = convocatoriaExamen;
     }
 
 }

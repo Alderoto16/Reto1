@@ -394,7 +394,7 @@ private boolean isUnidadEnunciadoExists(int unidadId, int enunciadoId) {
     boolean disponible = resultSet.getBoolean("disponible");
     enunciadoResult.setDisponible(disponible);
     enunciadoResult.setRuta(resultSet.getString("ruta"));
-    enunciadoResult.setConvocatoriaExamen(resultSet.getString("convocatoria"));
+ 
 
     enunciadosArray.add(enunciadoResult);
 }
