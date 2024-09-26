@@ -2,16 +2,16 @@ package Controller;
 
 import Models.Dificultad;
 import Models.UnidadDidactica;
-import Models.Enunciado;
+import java.sql.Date;
 
 public interface IController {
     
-     public void crearUnidad();
-     public void crearConvocatoria();
-     public void crearEnunciado();
-     public Enunciado consultarEnunciadosPorUnidad (int id);
+     public boolean crearUnidad();
+     public boolean crearConvocatoria();
+     public boolean crearEnunciado();
+     public void consultarEnunciadosPorUnidad ();
      public void consultarConvocatoriasConEnunciado();
-     public void visualizarTextoEnunciado();
+    public void visualizarTextoEnunciado(int enunciadoId) ;
      public void asignarEnunciadoConvocatoria();
          
     
