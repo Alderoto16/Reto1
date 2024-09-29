@@ -261,7 +261,7 @@ public class Controller implements IController {
             boolean disponible = Util.leerBooleano();
 
             // Ruta del archivo o documento
-            System.out.println("Introduce la ruta del enunciado: (Para hacer la prueba copie la ruta de cualquiera de los .docx ya creados en la carpeta enunciados)");
+            System.out.println("Introduce la ruta del enunciado: (Para hacer la pruebe esta ruta con un docx ya creado src/enunciados/enunciado1.docx");
             String ruta = Util.introducirCadena();
 
             // Insertar el enunciado en la base de datos
