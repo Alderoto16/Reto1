@@ -3,6 +3,7 @@ package Models;
 import Models.Dificultad;
 
 public class Enunciado {
+
     private int id;
     private String descripcion;
     private Dificultad nivel;
@@ -19,6 +20,7 @@ public class Enunciado {
 
     public Enunciado() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     public int getId() {
@@ -62,6 +64,15 @@ public class Enunciado {
     }
 
     @Override
+   public String toString() {
+    return "Enunciado:\n"
+            + "ID: " + id + "\n"
+            + "Descripción: " + descripcion + "\n"
+            + "Nivel: " + nivel + "\n"
+            + "Disponible: " + (disponible ? "SÍ" : "NO") + "\n"  
+            + "Ruta: " + ruta + "\n";
+}
+
     public String toString() {
         return "Enunciado{" + "id=" + id + ", descripcion=" + descripcion + ", nivel=" + nivel + ", disponible=" + disponible + ", ruta=" + ruta + '}';
     }
