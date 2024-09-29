@@ -3,6 +3,7 @@ package Controller;
 import Models.Dificultad;
 import Models.Enunciado;
 import Models.UnidadDidactica;
+
 import Utilidades.Util;
 import java.awt.Desktop;
 import java.io.File;
@@ -68,6 +69,7 @@ public class Controller implements IController {
             return true;
         }
     }
+
 
     private boolean isConvocatoriaExists(String convocatoria) {
         try {
@@ -366,6 +368,47 @@ public class Controller implements IController {
         return exists;
     }
 
+ @Override
+    public boolean crearUnidad() {
+        boolean added = false;
+        try {
+            connectionDB();
+            int id;
+            while (true) {
+                System.out.println("Introduce el ID de la unidad:");
+                id = Util.leerInt();
+                if (!isIDExists(CHECKIDUNIDAD, id)) {
+                    break;
+                }
+                System.out.println("El ID de la unidad ya existe. Por favor, introduce un ID único.");
+            }
+            System.out.println("Introduce el acronimo de la unidad:");
+            String acronimo = Util.introducirCadena();
+            System.out.println("Introduce el titulo de la unidad:");
+            String titulo = Util.introducirCadena();
+            System.out.println("Introduce la evaluacion de la unidad:");
+            String evaluacion = Util.introducirCadena();
+            System.out.println("Introduce la descripcion de la unidad:");
+            String descripcion = Util.introducirCadena();
+            statement = connection.prepareStatement(INSERTunidadDidactica);
+            statement.setInt(1, id);
+            statement.setString(2, acronimo);
+            statement.setString(3, titulo);
+            statement.setString(4, evaluacion);
+            statement.setString(5, descripcion);
+            if (statement.executeUpdate() > 0) {
+                added = true;
+                System.out.println("Data inserted into UnidadDidactica!");
+            } else {
+                System.out.println("Failed to insert into UnidadDidactica!");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error de SQL");
+            e.printStackTrace();
+        }
+        return added;
+    } 
+    
     @Override
     public void consultarEnunciadosPorUnidad() {
         connectionDB(); // Asume que tienes una función para conectar a la base de datos
@@ -524,6 +567,16 @@ public class Controller implements IController {
             e.printStackTrace();
         }
     }
+   @Override
+    public boolean crearEnunciado() {
+    boolean added = false;
+    try {
+        connectionDB();
+        // Verificar si hay unidades o convocatorias disponibles
+        if (!comprobarUnidades() || !comprobarConvocatorias()) {
+            System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
+            return false;
+        }
 
     @Override
     public void asignarEnunciadoConvocatoria() {
@@ -620,7 +673,8 @@ public class Controller implements IController {
         }
         return enunciadosIDList;
     }
-
+    return exists;
+}
     @Override
     public void visualizarTextoEnunciado(int enunciadoId) {
         openFile(getFilePathFromDatabase(enunciadoId));
@@ -663,4 +717,5 @@ public class Controller implements IController {
         }
         return path;
     }
+
 }
