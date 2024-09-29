@@ -19,8 +19,6 @@ public class Enunciado {
     }
 
     public Enunciado() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
     }
 
     public int getId() {
@@ -73,8 +71,5 @@ public class Enunciado {
             + "Ruta: " + ruta + "\n";
 }
 
-    public String toString() {
-        return "Enunciado{" + "id=" + id + ", descripcion=" + descripcion + ", nivel=" + nivel + ", disponible=" + disponible + ", ruta=" + ruta + '}';
-    }
 
 }

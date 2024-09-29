@@ -3,7 +3,6 @@ package Controller;
 import Models.Dificultad;
 import Models.Enunciado;
 import Models.UnidadDidactica;
-
 import Utilidades.Util;
 import java.awt.Desktop;
 import java.io.File;
@@ -69,7 +68,6 @@ public class Controller implements IController {
             return true;
         }
     }
-
 
     private boolean isConvocatoriaExists(String convocatoria) {
         try {
@@ -202,21 +200,27 @@ public class Controller implements IController {
         return added;
     }
 
-    public void mostrarConvocatorias() {
-        try {
-            connectionDB();
-            System.out.println("Convocatorias disponibles:");
-            while (resultSet.next()) {
-                String convocatoria = resultSet.getString("convocatoria");
-                System.out.println(convocatoria);
-            }
-            statement = connection.prepareStatement(GETconvocatorias);
-            resultSet = statement.executeQuery();
-        } catch (SQLException e) {
-            System.out.println("Error al consultar las convocatorias.");
-            e.printStackTrace();
+   public void mostrarConvocatorias() {
+    try {
+        connectionDB(); // Conectar a la base de datos
+        // Ejecutar la consulta antes de recorrer el resultSet
+        statement = connection.prepareStatement(GETconvocatorias);
+        resultSet = statement.executeQuery();
+
+        System.out.println("Convocatorias disponibles:");
+        // Recorremos el resultSet después de ejecutar la consulta
+        while (resultSet.next()) {
+            String convocatoria = resultSet.getString("convocatoria");
+            System.out.println("ID:" + convocatoria);
         }
+    } catch (SQLException e) {
+        System.out.println("Error al consultar las convocatorias.");
+        e.printStackTrace();
+    } finally {
+        // Aquí podrías cerrar los recursos si es necesario
     }
+}
+
 
     @Override
     public boolean crearEnunciado() {
@@ -257,7 +261,7 @@ public class Controller implements IController {
             boolean disponible = Util.leerBooleano();
 
             // Ruta del archivo o documento
-            System.out.println("Introduce la ruta del enunciado: ");
+            System.out.println("Introduce la ruta del enunciado: (Para hacer la prueba copie la ruta de cualquiera de los .docx ya creados en la carpeta enunciados)");
             String ruta = Util.introducirCadena();
 
             // Insertar el enunciado en la base de datos
@@ -368,47 +372,6 @@ public class Controller implements IController {
         return exists;
     }
 
- @Override
-    public boolean crearUnidad() {
-        boolean added = false;
-        try {
-            connectionDB();
-            int id;
-            while (true) {
-                System.out.println("Introduce el ID de la unidad:");
-                id = Util.leerInt();
-                if (!isIDExists(CHECKIDUNIDAD, id)) {
-                    break;
-                }
-                System.out.println("El ID de la unidad ya existe. Por favor, introduce un ID único.");
-            }
-            System.out.println("Introduce el acronimo de la unidad:");
-            String acronimo = Util.introducirCadena();
-            System.out.println("Introduce el titulo de la unidad:");
-            String titulo = Util.introducirCadena();
-            System.out.println("Introduce la evaluacion de la unidad:");
-            String evaluacion = Util.introducirCadena();
-            System.out.println("Introduce la descripcion de la unidad:");
-            String descripcion = Util.introducirCadena();
-            statement = connection.prepareStatement(INSERTunidadDidactica);
-            statement.setInt(1, id);
-            statement.setString(2, acronimo);
-            statement.setString(3, titulo);
-            statement.setString(4, evaluacion);
-            statement.setString(5, descripcion);
-            if (statement.executeUpdate() > 0) {
-                added = true;
-                System.out.println("Data inserted into UnidadDidactica!");
-            } else {
-                System.out.println("Failed to insert into UnidadDidactica!");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-        return added;
-    } 
-    
     @Override
     public void consultarEnunciadosPorUnidad() {
         connectionDB(); // Asume que tienes una función para conectar a la base de datos
@@ -529,54 +492,57 @@ public class Controller implements IController {
     }
 
     @Override
-    public void consultarConvocatoriasConEnunciado() {
-        try {
-            connectionDB();
-
-            // Prompt the user for the enunciado ID
-            System.out.println("Introduce el ID del enunciado que deseas consultar: ");
-            int enunciadoId = Util.leerInt();
-
-            // Prepare the SQL query to find convocatorias with the specified enunciado ID
-            String query = "SELECT * FROM ConvocatoriaExamen WHERE enunciadoID = ?";
-            PreparedStatement ps = connection.prepareStatement(query);
-            ps.setInt(1, enunciadoId);
-
-            ResultSet rs = ps.executeQuery();
-
-            // Check if any convocatorias were found
-            if (!rs.isBeforeFirst()) {
-                System.out.println("No se encontraron convocatorias para el enunciado con ID: " + enunciadoId);
-            } else {
-                System.out.println("Convocatorias asociadas con el enunciado ID " + enunciadoId + ":");
-                while (rs.next()) {
-                    // Retrieve and display relevant fields from the ConvocatoriaExamen table
-                    String convocatoria = rs.getString("convocatoria");
-                    String descripcion = rs.getString("descripcion");
-                    Date fecha = rs.getDate("fecha");
-                    String curso = rs.getString("curso");
-
-                    System.out.println("Convocatoria: " + convocatoria
-                            + ", Descripción: " + descripcion
-                            + ", Fecha: " + fecha
-                            + ", Curso: " + curso);
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-    }
-   @Override
-    public boolean crearEnunciado() {
-    boolean added = false;
+public void consultarConvocatoriasConEnunciado() {
     try {
         connectionDB();
-        // Verificar si hay unidades o convocatorias disponibles
-        if (!comprobarUnidades() || !comprobarConvocatorias()) {
-            System.out.println("No se puede crear el enunciado porque no hay unidades o convocatorias disponibles.");
-            return false;
+
+        // Mostrar enunciados disponibles antes de pedir el ID
+        ArrayList<Integer> enunciadosIDList = getEnunciadosIDList();
+        
+        if (enunciadosIDList.isEmpty()) {
+            System.out.println("No hay enunciados disponibles.");
+            return;
         }
+
+        System.out.println("Enunciados disponibles:");
+        for (int id : enunciadosIDList) {
+            System.out.println("ID: " + id);
+        }
+
+        // Solicitar al usuario que introduzca el ID del enunciado
+        System.out.println("Introduce el ID del enunciado que deseas consultar: ");
+        int enunciadoId = Util.leerInt();
+
+        // Preparar la consulta SQL para encontrar convocatorias con el enunciado ID especificado
+        String query = "SELECT * FROM ConvocatoriaExamen WHERE enunciadoID = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setInt(1, enunciadoId);
+
+        ResultSet rs = ps.executeQuery();
+
+        // Comprobar si se encontraron convocatorias
+        if (!rs.isBeforeFirst()) {
+            System.out.println("No se encontraron convocatorias para el enunciado con ID: " + enunciadoId);
+        } else {
+            System.out.println("Convocatorias asociadas con el enunciado ID " + enunciadoId + ":");
+            while (rs.next()) {
+                // Obtener y mostrar los campos relevantes de la tabla ConvocatoriaExamen
+                String convocatoria = rs.getString("convocatoria");
+                String descripcion = rs.getString("descripcion");
+                Date fecha = rs.getDate("fecha");
+                String curso = rs.getString("curso");
+
+                System.out.println("Convocatoria: " + convocatoria
+                        + ", Descripción: " + descripcion
+                        + ", Fecha: " + fecha
+                        + ", Curso: " + curso);
+            }
+        }
+    } catch (SQLException e) {
+        System.out.println("Error de SQL");
+        e.printStackTrace();
+    }
+}
 
     @Override
     public void asignarEnunciadoConvocatoria() {
@@ -673,8 +639,7 @@ public class Controller implements IController {
         }
         return enunciadosIDList;
     }
-    return exists;
-}
+
     @Override
     public void visualizarTextoEnunciado(int enunciadoId) {
         openFile(getFilePathFromDatabase(enunciadoId));
@@ -717,5 +682,4 @@ public class Controller implements IController {
         }
         return path;
     }
-
 }
